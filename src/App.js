@@ -112,7 +112,7 @@ function App() {
   return (
     <div className="App">
       <div className="header">
-        <h1>PNC Meta Model - Data Pipeline Designer</h1>
+        <h1>PNC Meta Model - Data Product Designer</h1>
       </div>
       <div className="flow-container">
         <ReactFlow

@@ -1,10 +1,10 @@
-# PNC Meta Model
+# PNC Meta Model - Data Product Designer
 
-A React-based application for designing data pipeline workflows using React Flow.
+A React-based application for designing data product workflows using React Flow.
 
 ## Features
 
-- Interactive canvas for designing data pipelines
+- Interactive canvas for designing data products
 - Drag-and-drop interface for creating workflow diagrams
 - Three types of nodes: Data Sources, Processors, and Outputs
 - Ability to connect nodes to create data flow
@@ -38,7 +38,7 @@ A React-based application for designing data pipeline workflows using React Flow
 
 4. Open your browser and navigate to:
    ```
-   http://localhost:12000
+   http://localhost:12001
    ```
 
 ## Usage
@@ -91,7 +91,7 @@ In the project directory, you can run:
 ### `npm start`
 
 Runs the app in the development mode.\
-Open [http://localhost:12000](http://localhost:12000) to view it in your browser.
+Open [http://localhost:12001](http://localhost:12001) to view it in your browser.
 
 ### `npm test`
 
