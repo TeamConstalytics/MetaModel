@@ -9,6 +9,8 @@ A React-based application for designing data product workflows using React Flow.
 - Three types of nodes: Data Sources, Processors, and Outputs
 - Ability to connect nodes to create data flow
 - Node properties panel for configuring each node
+- Save and load workflow diagrams
+- Export workflows as AsyncAPI 3.0.0 specification
 - Responsive design
 
 ## Getting Started
@@ -43,15 +45,22 @@ A React-based application for designing data product workflows using React Flow.
 
 ## Usage
 
-1. **Adding Nodes**: Use the toolbar in the top-right corner to add Data Source, Processor, or Output nodes.
+1. **Adding Nodes**: Drag nodes from the left panel onto the canvas or use the toolbar in the top-right corner.
 
 2. **Connecting Nodes**: Click and drag from a node's output handle (bottom) to another node's input handle (top) to create connections.
 
-3. **Configuring Nodes**: Click on any node to open the properties panel where you can edit the node's label and description.
+3. **Configuring Nodes**: Click on any node to open the properties panel where you can edit the node's properties based on its type:
+   - Data Sources: Configure connection details, table names, and queries
+   - Processors: Set business rules and transformation logic
+   - Outputs: Define destination and format settings
 
 4. **Moving Nodes**: Click and drag nodes to reposition them on the canvas.
 
 5. **Panning and Zooming**: Use the mouse wheel to zoom in/out and drag the canvas to pan.
+
+6. **Saving and Loading**: Use the Save and Load buttons to persist your workflow.
+
+7. **Exporting as AsyncAPI**: Click the "Export as AsyncAPI" button to generate an AsyncAPI 3.0.0 specification for your workflow.
 
 ## Project Structure
 
@@ -62,7 +71,12 @@ src/
 │   │   ├── DataSourceNode.js
 │   │   ├── ProcessorNode.js
 │   │   └── OutputNode.js
-│   └── NodeToolbar.js
+│   ├── NodeToolbar.js
+│   ├── LeftPanel.js
+│   ├── SaveLoadButtons.js
+│   └── ExportButton.js
+├── utils/
+│   └── asyncApiExporter.js
 ├── App.js
 ├── App.css
 ├── index.js
@@ -73,16 +87,16 @@ src/
 
 - React.js
 - React Flow
+- js-yaml (for AsyncAPI export)
 - CSS3
 
 ## Future Enhancements
 
-- Save and load workflow diagrams
-- Export workflows as JSON or images
 - Additional node types for more complex data operations
 - Node validation and error checking
 - Integration with backend services for executing workflows
 - User authentication and sharing capabilities
+- Visual themes and customization options
 
 ## Available Scripts
 
@@ -109,3 +123,4 @@ This project is licensed under the MIT License.
 
 - [React Flow](https://reactflow.dev/) for the workflow visualization library
 - [Create React App](https://create-react-app.dev/) for the project setup
+- [AsyncAPI Initiative](https://www.asyncapi.com/) for the AsyncAPI specification

@@ -18,6 +18,7 @@ import OutputNode from './components/nodes/OutputNode';
 import NodeToolbar from './components/NodeToolbar';
 import SaveLoadButtons from './components/SaveLoadButtons';
 import LeftPanel from './components/LeftPanel';
+import ExportButton from './components/ExportButton';
 
 // Initial nodes and edges
 const initialNodes = [
@@ -167,11 +168,14 @@ function App() {
     <div className="App">
       <div className="header">
         <h1>PNC Meta Model - Data Product Designer</h1>
-        <SaveLoadButtons 
-          reactFlowInstance={reactFlowInstance} 
-          setNodes={setNodes} 
-          setEdges={setEdges} 
-        />
+        <div className="header-buttons">
+          <SaveLoadButtons 
+            reactFlowInstance={reactFlowInstance} 
+            setNodes={setNodes} 
+            setEdges={setEdges} 
+          />
+          <ExportButton reactFlowInstance={reactFlowInstance} />
+        </div>
       </div>
       <div className="app-content">
         <LeftPanel />
