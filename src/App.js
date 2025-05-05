@@ -209,13 +209,11 @@ function App() {
               />
             </Panel>
             
-            {/* Hidden component to handle AsyncAPI export */}
-            <div style={{ display: 'none' }}>
-              <ExportButton 
-                ref={exportButtonRef}
-                reactFlowInstance={reactFlowInstance} 
-              />
-            </div>
+            {/* Hidden export button component */}
+            <ExportButton 
+              ref={exportButtonRef}
+              reactFlowInstance={reactFlowInstance} 
+            />
           </ReactFlow>
         </div>
       

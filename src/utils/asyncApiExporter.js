@@ -1,7 +1,7 @@
 /**
  * Utility to export pipeline as AsyncAPI 3.0.0 specification
  */
-import yaml from 'js-yaml';
+import * as yaml from 'js-yaml';
 
 /**
  * Converts a pipeline (nodes and edges) to AsyncAPI 3.0.0 format
@@ -385,16 +385,28 @@ const getContentType = (format) => {
  */
 export const generateAsyncApiYaml = (asyncApiObject) => {
   try {
-    return yaml.dump(asyncApiObject, {
+    console.log('Converting to YAML, object keys:', Object.keys(asyncApiObject));
+    const yamlString = yaml.dump(asyncApiObject, {
       indent: 2,
       lineWidth: -1,
       noRefs: true,
       sortKeys: false
     });
+    console.log('YAML generated successfully, length:', yamlString.length);
+    return yamlString;
   } catch (error) {
     console.error('Error generating YAML:', error);
+    // Log more details about the error
+    console.error('Error details:', error.stack);
+    console.error('Object to convert:', JSON.stringify(asyncApiObject).substring(0, 200) + '...');
+    
     // Fallback to JSON if YAML generation fails
-    return JSON.stringify(asyncApiObject, null, 2);
+    try {
+      return JSON.stringify(asyncApiObject, null, 2);
+    } catch (jsonError) {
+      console.error('Error stringifying to JSON:', jsonError);
+      return `Error generating specification: ${error.message}`;
+    }
   }
 };
 
@@ -406,8 +418,22 @@ export const generateAsyncApiYaml = (asyncApiObject) => {
  * @returns {String} AsyncAPI specification as YAML string
  */
 export const exportAsAsyncApi = (nodes, edges, metadata = {}) => {
-  const asyncApiObject = convertToAsyncAPI(nodes, edges, metadata);
-  return generateAsyncApiYaml(asyncApiObject);
+  try {
+    console.log('Starting AsyncAPI export with', nodes.length, 'nodes and', edges.length, 'edges');
+    
+    if (!nodes || !Array.isArray(nodes) || nodes.length === 0) {
+      console.warn('No nodes provided for AsyncAPI export');
+      return "# No nodes found in the workflow\nasyncapi: '3.0.0'\ninfo:\n  title: Empty Workflow\n  version: '1.0.0'";
+    }
+    
+    const asyncApiObject = convertToAsyncAPI(nodes, edges, metadata);
+    console.log('AsyncAPI object created successfully');
+    
+    return generateAsyncApiYaml(asyncApiObject);
+  } catch (error) {
+    console.error('Error in exportAsAsyncApi:', error);
+    return `# Error generating AsyncAPI specification\n# ${error.message}\nasyncapi: '3.0.0'\ninfo:\n  title: Error in Export\n  version: '1.0.0'\n  description: 'An error occurred: ${error.message}'`;
+  }
 };
 
 export default exportAsAsyncApi;

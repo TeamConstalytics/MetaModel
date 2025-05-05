@@ -1,14 +1,20 @@
 import React from 'react';
 import { Handle, Position } from 'reactflow';
+import { FaSave, FaFileExport, FaGlobe } from 'react-icons/fa';
 
 const OutputNode = ({ data }) => {
   // Determine icon based on subtype
-  let icon = '💾';
-  if (data.subtype === 'file') {
-    icon = '📝';
-  } else if (data.subtype === 'api') {
-    icon = '📡';
-  }
+  const getIcon = () => {
+    switch (data.subtype) {
+      case 'file':
+        return <FaFileExport className="node-icon-svg" />;
+      case 'api':
+        return <FaGlobe className="node-icon-svg" />;
+      case 'database':
+      default:
+        return <FaSave className="node-icon-svg" />;
+    }
+  };
 
   return (
     <div className="node-content">
@@ -19,7 +25,7 @@ const OutputNode = ({ data }) => {
         style={{ background: '#FF5722' }}
       />
       
-      <div className="node-icon">{icon}</div>
+      <div className="node-icon">{getIcon()}</div>
       <div className="node-header">{data.label}</div>
       <div className="node-description">{data.description}</div>
       

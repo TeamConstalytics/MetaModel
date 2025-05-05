@@ -1,5 +1,11 @@
 import React from 'react';
 import { useCallback } from 'react';
+import { 
+  FaDatabase, FaFileAlt, FaPlug, FaFilter, FaRandom, 
+  FaChartBar, FaSave, FaFileExport, FaGlobe 
+} from 'react-icons/fa';
+import { SiApachekafka } from 'react-icons/si';
+import { BiData } from 'react-icons/bi';
 
 const LeftPanel = () => {
   const onDragStart = useCallback((event, nodeType, nodeSubtype, label, description) => {
@@ -17,7 +23,7 @@ const LeftPanel = () => {
   return (
     <div className="left-panel">
       <div className="panel-header">
-        <h3>Components</h3>
+        <h3><BiData className="panel-header-icon" /> Components</h3>
       </div>
       <div className="panel-section">
         <h4>Data Sources</h4>
@@ -27,7 +33,7 @@ const LeftPanel = () => {
           draggable
         >
           <div className="dnd-node-icon">
-            <i className="icon-database">📊</i>
+            <FaDatabase className="node-icon" />
           </div>
           <div className="dnd-node-label">Database Source</div>
         </div>
@@ -37,7 +43,7 @@ const LeftPanel = () => {
           draggable
         >
           <div className="dnd-node-icon">
-            <i className="icon-file">📄</i>
+            <FaFileAlt className="node-icon" />
           </div>
           <div className="dnd-node-label">File Input</div>
         </div>
@@ -47,7 +53,7 @@ const LeftPanel = () => {
           draggable
         >
           <div className="dnd-node-icon">
-            <i className="icon-api">🔌</i>
+            <FaPlug className="node-icon" />
           </div>
           <div className="dnd-node-label">API Source</div>
         </div>
@@ -61,7 +67,7 @@ const LeftPanel = () => {
           draggable
         >
           <div className="dnd-node-icon">
-            <i className="icon-filter">🔍</i>
+            <FaFilter className="node-icon" />
           </div>
           <div className="dnd-node-label">Filter</div>
         </div>
@@ -71,7 +77,7 @@ const LeftPanel = () => {
           draggable
         >
           <div className="dnd-node-icon">
-            <i className="icon-transform">🔄</i>
+            <FaRandom className="node-icon" />
           </div>
           <div className="dnd-node-label">Transform</div>
         </div>
@@ -81,7 +87,7 @@ const LeftPanel = () => {
           draggable
         >
           <div className="dnd-node-icon">
-            <i className="icon-aggregate">📊</i>
+            <FaChartBar className="node-icon" />
           </div>
           <div className="dnd-node-label">Aggregate</div>
         </div>
@@ -91,7 +97,7 @@ const LeftPanel = () => {
           draggable
         >
           <div className="dnd-node-icon">
-            <i className="icon-kafka">📬</i>
+            <SiApachekafka className="node-icon" />
           </div>
           <div className="dnd-node-label">Kafka</div>
         </div>
@@ -105,7 +111,7 @@ const LeftPanel = () => {
           draggable
         >
           <div className="dnd-node-icon">
-            <i className="icon-database">💾</i>
+            <FaSave className="node-icon" />
           </div>
           <div className="dnd-node-label">Database</div>
         </div>
@@ -115,7 +121,7 @@ const LeftPanel = () => {
           draggable
         >
           <div className="dnd-node-icon">
-            <i className="icon-file">📝</i>
+            <FaFileExport className="node-icon" />
           </div>
           <div className="dnd-node-label">File Output</div>
         </div>
@@ -125,7 +131,7 @@ const LeftPanel = () => {
           draggable
         >
           <div className="dnd-node-icon">
-            <i className="icon-api">📡</i>
+            <FaGlobe className="node-icon" />
           </div>
           <div className="dnd-node-label">API Output</div>
         </div>

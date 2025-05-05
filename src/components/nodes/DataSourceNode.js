@@ -1,18 +1,24 @@
 import React from 'react';
 import { Handle, Position } from 'reactflow';
+import { FaDatabase, FaFileAlt, FaPlug } from 'react-icons/fa';
 
 const DataSourceNode = ({ data }) => {
   // Determine icon based on subtype
-  let icon = '📊';
-  if (data.subtype === 'file') {
-    icon = '📄';
-  } else if (data.subtype === 'api') {
-    icon = '🔌';
-  }
+  const getIcon = () => {
+    switch (data.subtype) {
+      case 'file':
+        return <FaFileAlt className="node-icon-svg" />;
+      case 'api':
+        return <FaPlug className="node-icon-svg" />;
+      case 'database':
+      default:
+        return <FaDatabase className="node-icon-svg" />;
+    }
+  };
 
   return (
     <div className="node-content">
-      <div className="node-icon">{icon}</div>
+      <div className="node-icon">{getIcon()}</div>
       <div className="node-header">{data.label}</div>
       <div className="node-description">{data.description}</div>
       

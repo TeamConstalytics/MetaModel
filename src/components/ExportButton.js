@@ -19,28 +19,59 @@ const ExportButton = forwardRef(({ reactFlowInstance }, ref) => {
       return;
     }
 
-    const { nodes, edges } = reactFlowInstance.toObject();
-    const asyncApiYaml = exportAsAsyncApi(nodes, edges, metadata);
-    setExportedData(asyncApiYaml);
-    setShowModal(true);
+    try {
+      const { nodes, edges } = reactFlowInstance.toObject();
+      console.log('Exporting nodes:', nodes.length, 'edges:', edges.length);
+      const asyncApiYaml = exportAsAsyncApi(nodes, edges, metadata);
+      console.log('Generated YAML length:', asyncApiYaml.length);
+      setExportedData(asyncApiYaml);
+      setShowModal(true);
+    } catch (error) {
+      console.error('Error generating AsyncAPI:', error);
+      alert('Error generating AsyncAPI: ' + error.message);
+    }
   };
 
   const handleDownload = () => {
-    const element = document.createElement('a');
-    const file = new Blob([exportedData], { type: 'text/plain' });
-    element.href = URL.createObjectURL(file);
-    element.download = 'asyncapi-spec.yaml';
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+    try {
+      // Create a blob with the YAML content
+      const blob = new Blob([exportedData], { type: 'text/yaml' });
+      
+      // Create a URL for the blob
+      const url = URL.createObjectURL(blob);
+      
+      // Create a temporary link element
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'asyncapi-spec.yaml';
+      link.style.display = 'none';
+      
+      // Add the link to the document, click it, and remove it
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 100);
+      
+      console.log('Download initiated');
+    } catch (error) {
+      console.error('Error downloading YAML:', error);
+      alert('Error downloading YAML: ' + error.message);
+    }
   };
 
-  // Copy functionality removed as it's not needed
-
   const handleExploreAsyncAPI = () => {
-    // Open AsyncAPI Studio in a new tab with the current spec
-    const encodedSpec = encodeURIComponent(exportedData);
-    window.open(`https://studio.asyncapi.com/?url=data:text/plain;charset=utf-8,${encodedSpec}`, '_blank');
+    try {
+      // Open AsyncAPI Studio in a new tab with the current spec
+      const encodedSpec = encodeURIComponent(exportedData);
+      window.open(`https://studio.asyncapi.com/?url=data:text/plain;charset=utf-8,${encodedSpec}`, '_blank');
+    } catch (error) {
+      console.error('Error opening AsyncAPI Studio:', error);
+      alert('Error opening AsyncAPI Studio: ' + error.message);
+    }
   };
   
   // Expose handleExport method to parent components
@@ -50,8 +81,6 @@ const ExportButton = forwardRef(({ reactFlowInstance }, ref) => {
 
   return (
     <>
-      {/* The button is now moved to NodeToolbar */}
-      
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-content">

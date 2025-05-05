@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { FaSave, FaUpload } from 'react-icons/fa';
 
 const SaveLoadButtons = ({ reactFlowInstance, setNodes, setEdges }) => {
   // Save workflow to JSON
@@ -51,11 +52,13 @@ const SaveLoadButtons = ({ reactFlowInstance, setNodes, setEdges }) => {
 
   return (
     <div className="save-load-buttons">
-      <button className="action-button save-button" onClick={saveWorkflow}>
-        Save Workflow
+      <button className="action-button save-button" onClick={saveWorkflow} title="Save Workflow">
+        <FaSave className="button-icon" />
+        <span className="button-text">Save</span>
       </button>
-      <label className="action-button load-button">
-        Load Workflow
+      <label className="action-button load-button" title="Load Workflow">
+        <FaUpload className="button-icon" />
+        <span className="button-text">Load</span>
         <input 
           type="file" 
           accept=".json" 
