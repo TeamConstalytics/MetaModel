@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { exportAsAsyncApi } from '../utils/asyncApiExporter';
+import { FaFileExport, FaDownload, FaTimes, FaFileCode } from 'react-icons/fa';
 
-const ExportButton = ({ reactFlowInstance }) => {
+const ExportButton = forwardRef(({ reactFlowInstance }, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [exportedData, setExportedData] = useState('');
-  const [metadata, setMetadata] = useState({
+  
+  // Default metadata that will be used without showing in the UI
+  const metadata = {
     title: 'Data Pipeline API',
     version: '1.0.0',
     description: 'API generated from PNC Meta Model - Data Product Designer'
-  });
+  };
 
   const handleExport = () => {
     if (!reactFlowInstance) {
@@ -32,81 +35,42 @@ const ExportButton = ({ reactFlowInstance }) => {
     document.body.removeChild(element);
   };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(exportedData)
-      .then(() => {
-        alert('AsyncAPI specification copied to clipboard!');
-      })
-      .catch(err => {
-        console.error('Failed to copy text: ', err);
-        alert('Failed to copy to clipboard. Please try again.');
-      });
-  };
+  // Copy functionality removed as it's not needed
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setMetadata(prev => ({
-      ...prev,
-      [name]: value
-    }));
+  const handleExploreAsyncAPI = () => {
+    // Open AsyncAPI Studio in a new tab with the current spec
+    const encodedSpec = encodeURIComponent(exportedData);
+    window.open(`https://studio.asyncapi.com/?url=data:text/plain;charset=utf-8,${encodedSpec}`, '_blank');
   };
+  
+  // Expose handleExport method to parent components
+  useImperativeHandle(ref, () => ({
+    handleExport
+  }));
 
   return (
     <>
-      <button className="export-button" onClick={handleExport}>
-        Export as AsyncAPI
-      </button>
-
+      {/* The button is now moved to NodeToolbar */}
+      
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h3>AsyncAPI 3.0.0 Export</h3>
-              <button className="close-button" onClick={() => setShowModal(false)}>×</button>
+              <h3><FaFileCode className="header-icon" /> AsyncAPI 3.0.0 Export</h3>
+              <button className="close-button" onClick={() => setShowModal(false)}>
+                <FaTimes />
+              </button>
             </div>
             <div className="modal-body">
-              <div className="metadata-form">
-                <div className="form-group">
-                  <label>API Title:</label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={metadata.title}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>API Version:</label>
-                  <input
-                    type="text"
-                    name="version"
-                    value={metadata.version}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>API Description:</label>
-                  <textarea
-                    name="description"
-                    value={metadata.description}
-                    onChange={handleInputChange}
-                    rows={3}
-                  />
-                </div>
-                <button className="update-button" onClick={handleExport}>
-                  Update AsyncAPI
-                </button>
-              </div>
               <div className="export-preview">
-                <h4>AsyncAPI Specification</h4>
                 <pre className="code-preview">{exportedData}</pre>
               </div>
               <div className="modal-actions">
-                <button className="copy-button" onClick={handleCopy}>
-                  Copy to Clipboard
-                </button>
                 <button className="download-button" onClick={handleDownload}>
-                  Download YAML
+                  <FaDownload className="button-icon" /> Download YAML
+                </button>
+                <button className="explore-button" onClick={handleExploreAsyncAPI}>
+                  <FaFileExport className="button-icon" /> Explore in AsyncAPI Studio
                 </button>
               </div>
             </div>
@@ -115,6 +79,6 @@ const ExportButton = ({ reactFlowInstance }) => {
       )}
     </>
   );
-};
+});
 
 export default ExportButton;
