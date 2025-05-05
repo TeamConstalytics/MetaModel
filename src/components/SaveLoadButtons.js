@@ -1,0 +1,70 @@
+import React, { useCallback } from 'react';
+
+const SaveLoadButtons = ({ reactFlowInstance, setNodes, setEdges }) => {
+  // Save workflow to JSON
+  const saveWorkflow = useCallback(() => {
+    if (reactFlowInstance) {
+      const flow = reactFlowInstance.toObject();
+      const json = JSON.stringify(flow, null, 2);
+      
+      // Create a blob and download link
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'pnc-metamodel-workflow.json';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }, [reactFlowInstance]);
+  
+  // Load workflow from file
+  const loadWorkflow = useCallback((event) => {
+    const fileReader = new FileReader();
+    fileReader.onload = (e) => {
+      try {
+        const flow = JSON.parse(e.target.result);
+        
+        if (flow && flow.nodes && flow.edges && reactFlowInstance) {
+          // Clear current flow
+          setNodes([]);
+          setEdges([]);
+          
+          // Set viewport
+          reactFlowInstance.setViewport(flow.viewport || { x: 0, y: 0, zoom: 1 });
+          
+          // Add nodes and edges
+          setNodes(flow.nodes || []);
+          setEdges(flow.edges || []);
+        }
+      } catch (error) {
+        console.error('Error loading workflow:', error);
+        alert('Failed to load workflow. Invalid file format.');
+      }
+    };
+    
+    if (event.target.files && event.target.files.length > 0) {
+      fileReader.readAsText(event.target.files[0]);
+    }
+  }, [reactFlowInstance, setNodes, setEdges]);
+
+  return (
+    <div className="save-load-buttons">
+      <button className="action-button save-button" onClick={saveWorkflow}>
+        Save Workflow
+      </button>
+      <label className="action-button load-button">
+        Load Workflow
+        <input 
+          type="file" 
+          accept=".json" 
+          style={{ display: 'none' }} 
+          onChange={loadWorkflow} 
+        />
+      </label>
+    </div>
+  );
+};
+
+export default SaveLoadButtons;
