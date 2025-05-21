@@ -1,12 +1,19 @@
 import React, { useCallback } from 'react';
 import { FaSave, FaUpload } from 'react-icons/fa';
 
-const SaveLoadButtons = ({ reactFlowInstance, setNodes, setEdges }) => {
+const SaveLoadButtons = ({ reactFlowInstance, setNodes, setEdges, ontology, setOntology }) => {
   // Save workflow to JSON
   const saveWorkflow = useCallback(() => {
     if (reactFlowInstance) {
       const flow = reactFlowInstance.toObject();
-      const json = JSON.stringify(flow, null, 2);
+      
+      // Add ontology data to the flow object
+      const flowWithOntology = {
+        ...flow,
+        ontology: ontology
+      };
+      
+      const json = JSON.stringify(flowWithOntology, null, 2);
       
       // Create a blob and download link
       const blob = new Blob([json], { type: 'application/json' });
@@ -18,7 +25,7 @@ const SaveLoadButtons = ({ reactFlowInstance, setNodes, setEdges }) => {
       link.click();
       document.body.removeChild(link);
     }
-  }, [reactFlowInstance]);
+  }, [reactFlowInstance, ontology]);
   
   // Load workflow from file
   const loadWorkflow = useCallback((event) => {
@@ -38,6 +45,11 @@ const SaveLoadButtons = ({ reactFlowInstance, setNodes, setEdges }) => {
           // Add nodes and edges
           setNodes(flow.nodes || []);
           setEdges(flow.edges || []);
+          
+          // Load ontology data if available
+          if (flow.ontology) {
+            setOntology(flow.ontology);
+          }
         }
       } catch (error) {
         console.error('Error loading workflow:', error);
@@ -48,7 +60,7 @@ const SaveLoadButtons = ({ reactFlowInstance, setNodes, setEdges }) => {
     if (event.target.files && event.target.files.length > 0) {
       fileReader.readAsText(event.target.files[0]);
     }
-  }, [reactFlowInstance, setNodes, setEdges]);
+  }, [reactFlowInstance, setNodes, setEdges, setOntology]);
 
   return (
     <div className="save-load-buttons">
