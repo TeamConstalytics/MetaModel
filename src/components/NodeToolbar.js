@@ -1,8 +1,19 @@
 import React from 'react';
-import { FaDatabase, FaCogs, FaFileExport, FaSave, FaUpload, FaFileCode } from 'react-icons/fa';
+import { 
+  FaDatabase, 
+  FaCogs, 
+  FaFileExport, 
+  FaSave, 
+  FaUpload, 
+  FaFileCode, 
+  FaUndo, 
+  FaRedo 
+} from 'react-icons/fa';
+import Tooltip from './Tooltip';
 
-const NodeToolbar = ({ onAddNode, saveLoadProps, exportProps }) => {
+const NodeToolbar = ({ onAddNode, saveLoadProps, exportProps, historyProps }) => {
   const { reactFlowInstance, setNodes, setEdges } = saveLoadProps || {};
+  const { onUndo, onRedo, canUndo, canRedo } = historyProps || {};
   
   // Save workflow to JSON
   const saveWorkflow = () => {
@@ -61,38 +72,82 @@ const NodeToolbar = ({ onAddNode, saveLoadProps, exportProps }) => {
 
   return (
     <div className="node-toolbar">
-      <button onClick={() => onAddNode('dataSource')} title="Add Data Source">
-        <FaDatabase className="button-icon" /> Add Source
-      </button>
-      <button onClick={() => onAddNode('processor')} title="Add Processor">
-        <FaCogs className="button-icon" /> Add Processor
-      </button>
-      <button onClick={() => onAddNode('output')} title="Add Output">
-        <FaFileExport className="button-icon" /> Add Output
-      </button>
+      <div className="toolbar-group">
+        <Tooltip content="Add Data Source (Ctrl+1)">
+          <button onClick={() => onAddNode('dataSource')} title="Add Data Source">
+            <FaDatabase className="button-icon" /> Add Source
+          </button>
+        </Tooltip>
+        
+        <Tooltip content="Add Processor (Ctrl+2)">
+          <button onClick={() => onAddNode('processor')} title="Add Processor">
+            <FaCogs className="button-icon" /> Add Processor
+          </button>
+        </Tooltip>
+        
+        <Tooltip content="Add Output (Ctrl+3)">
+          <button onClick={() => onAddNode('output')} title="Add Output">
+            <FaFileExport className="button-icon" /> Add Output
+          </button>
+        </Tooltip>
+      </div>
       
       <div className="toolbar-divider"></div>
       
-      <button className="action-button save-button" onClick={saveWorkflow} title="Save Workflow">
-        <FaSave className="button-icon" />
-        <span className="button-text">Save</span>
-      </button>
+      <div className="toolbar-group history-buttons">
+        <Tooltip content="Undo (Ctrl+Z)">
+          <button 
+            className="history-button" 
+            onClick={onUndo} 
+            disabled={!canUndo}
+            title="Undo"
+          >
+            <FaUndo />
+          </button>
+        </Tooltip>
+        
+        <Tooltip content="Redo (Ctrl+Shift+Z)">
+          <button 
+            className="history-button" 
+            onClick={onRedo} 
+            disabled={!canRedo}
+            title="Redo"
+          >
+            <FaRedo />
+          </button>
+        </Tooltip>
+      </div>
       
-      <label className="action-button load-button" title="Load Workflow">
-        <FaUpload className="button-icon" />
-        <span className="button-text">Load</span>
-        <input 
-          type="file" 
-          accept=".json" 
-          style={{ display: 'none' }} 
-          onChange={loadWorkflow} 
-        />
-      </label>
+      <div className="toolbar-divider"></div>
       
-      <button className="action-button export-button" onClick={handleExport} title="Export as AsyncAPI">
-        <FaFileCode className="button-icon" />
-        <span className="button-text">AsyncAPI</span>
-      </button>
+      <div className="toolbar-group">
+        <Tooltip content="Save Workflow (Ctrl+S)">
+          <button className="action-button save-button" onClick={saveWorkflow} title="Save Workflow">
+            <FaSave className="button-icon" />
+            <span className="button-text">Save</span>
+          </button>
+        </Tooltip>
+        
+        <Tooltip content="Load Workflow">
+          <label className="action-button load-button" title="Load Workflow">
+            <FaUpload className="button-icon" />
+            <span className="button-text">Load</span>
+            <input 
+              type="file" 
+              accept=".json" 
+              style={{ display: 'none' }} 
+              onChange={loadWorkflow} 
+            />
+          </label>
+        </Tooltip>
+        
+        <Tooltip content="Export as AsyncAPI (Ctrl+E)">
+          <button className="action-button export-button" onClick={handleExport} title="Export as AsyncAPI">
+            <FaFileCode className="button-icon" />
+            <span className="button-text">AsyncAPI</span>
+          </button>
+        </Tooltip>
+      </div>
     </div>
   );
 };

@@ -325,6 +325,13 @@
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   flex-wrap: wrap;
+  align-items: center;
+}
+
+.toolbar-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .node-toolbar button {
@@ -344,6 +351,16 @@
 .node-toolbar button:hover {
   background-color: #e9ecef;
   border-color: #ced4da;
+}
+
+.node-toolbar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.node-toolbar button:disabled:hover {
+  background-color: #f8f9fa;
+  border-color: #ddd;
 }
 
 .toolbar-divider {

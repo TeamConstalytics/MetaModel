@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import ReactFlow, {
   MiniMap,
   Controls,
@@ -7,9 +7,11 @@ import ReactFlow, {
   useEdgesState,
   addEdge,
   Panel,
+  useReactFlow,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import './App.css';
+import './theme.css';
 
 // Custom node components
 import DataSourceNode from './components/nodes/DataSourceNode';
@@ -19,6 +21,12 @@ import NodeToolbar from './components/NodeToolbar';
 import LeftPanel from './components/LeftPanel';
 import ExportButton from './components/ExportButton';
 import NodeProperties from './components/NodeProperties';
+import ThemeToggle from './components/ThemeToggle';
+import { ThemeProvider } from './context/ThemeContext';
+import KeyboardShortcuts from './components/KeyboardShortcuts';
+import WelcomeModal from './components/WelcomeModal';
+import KeyboardShortcutsHelp from './components/KeyboardShortcutsHelp';
+import HistoryManager from './utils/historyManager';
 
 // Initial nodes and edges
 const initialNodes = [
@@ -54,32 +62,75 @@ const nodeTypes = {
   output: OutputNode,
 };
 
-function App() {
+function AppContent() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNode, setSelectedNode] = useState(null);
+  const [selectedEdge, setSelectedEdge] = useState(null);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const reactFlowWrapper = useRef(null);
   const exportButtonRef = useRef(null);
+  const reactFlowInstance2 = useReactFlow();
+  
+  // Initialize history manager for undo/redo
+  const historyManagerRef = useRef(new HistoryManager());
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
+
+  // Update history state
+  useEffect(() => {
+    if (reactFlowInstance) {
+      setCanUndo(historyManagerRef.current.canUndo());
+      setCanRedo(historyManagerRef.current.canRedo());
+    }
+  }, [nodes, edges, reactFlowInstance]);
+
+  // Save current state to history when nodes or edges change
+  useEffect(() => {
+    if (reactFlowInstance) {
+      const currentState = reactFlowInstance.toObject();
+      historyManagerRef.current.push(currentState);
+      setCanUndo(historyManagerRef.current.canUndo());
+      setCanRedo(historyManagerRef.current.canRedo());
+    }
+  }, [nodes, edges, reactFlowInstance]);
 
   // Handle connections between nodes
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
+    (params) => {
+      setEdges((eds) => addEdge(params, eds));
+    },
     [setEdges]
   );
 
   // Handle node selection
   const onNodeClick = useCallback((event, node) => {
     setSelectedNode(node);
+    setSelectedEdge(null);
+  }, []);
+
+  // Handle edge selection
+  const onEdgeClick = useCallback((event, edge) => {
+    setSelectedEdge(edge);
+    setSelectedNode(null);
+  }, []);
+
+  // Handle background click to clear selection
+  const onPaneClick = useCallback(() => {
+    setSelectedNode(null);
+    setSelectedEdge(null);
   }, []);
 
   // Add new node to the canvas
   const onAddNode = useCallback(
     (type) => {
       const newNode = {
-        id: `${nodes.length + 1}`,
+        id: `node_${Date.now()}`,
         type,
-        position: { x: 250, y: 100 + nodes.length * 100 },
+        position: { 
+          x: 250 + Math.random() * 100, 
+          y: 100 + Math.random() * 100 
+        },
         data: { 
           label: type === 'dataSource' 
             ? 'New Data Source' 
@@ -91,7 +142,7 @@ function App() {
       };
       setNodes((nds) => nds.concat(newNode));
     },
-    [nodes, setNodes]
+    [setNodes]
   );
 
   // Update node data
@@ -140,7 +191,7 @@ function App() {
       });
 
       const newNode = {
-        id: `node_${nodes.length + 1}`,
+        id: `node_${Date.now()}`,
         type: nodeData.type,
         position,
         data: {
@@ -152,7 +203,7 @@ function App() {
 
       setNodes((nds) => nds.concat(newNode));
     },
-    [reactFlowInstance, nodes, setNodes]
+    [reactFlowInstance, setNodes]
   );
 
   // Delete node
@@ -165,10 +216,93 @@ function App() {
     [setNodes, setEdges]
   );
 
+  // Delete edge
+  const onDeleteEdge = useCallback(
+    (edgeId) => {
+      setEdges((eds) => eds.filter((edge) => edge.id !== edgeId));
+      setSelectedEdge(null);
+    },
+    [setEdges]
+  );
+
+  // Handle keyboard delete
+  const onKeyDown = useCallback(
+    (event) => {
+      if (event.key === 'Delete' || event.key === 'Backspace') {
+        if (selectedNode) {
+          onDeleteNode(selectedNode.id);
+        } else if (selectedEdge) {
+          onDeleteEdge(selectedEdge.id);
+        }
+      }
+    },
+    [selectedNode, selectedEdge, onDeleteNode, onDeleteEdge]
+  );
+
+  // Add event listener for keyboard delete
+  useEffect(() => {
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [onKeyDown]);
+
+  // Undo function
+  const handleUndo = useCallback(() => {
+    const prevState = historyManagerRef.current.undo();
+    if (prevState) {
+      const { nodes: prevNodes, edges: prevEdges, viewport } = prevState;
+      setNodes(prevNodes);
+      setEdges(prevEdges);
+      if (viewport && reactFlowInstance2) {
+        reactFlowInstance2.setViewport(viewport);
+      }
+    }
+  }, [setNodes, setEdges, reactFlowInstance2]);
+
+  // Redo function
+  const handleRedo = useCallback(() => {
+    const nextState = historyManagerRef.current.redo();
+    if (nextState) {
+      const { nodes: nextNodes, edges: nextEdges, viewport } = nextState;
+      setNodes(nextNodes);
+      setEdges(nextEdges);
+      if (viewport && reactFlowInstance2) {
+        reactFlowInstance2.setViewport(viewport);
+      }
+    }
+  }, [setNodes, setEdges, reactFlowInstance2]);
+
+  // Save workflow function
+  const handleSave = useCallback(() => {
+    if (reactFlowInstance) {
+      const flow = reactFlowInstance.toObject();
+      const json = JSON.stringify(flow, null, 2);
+      
+      // Create a blob and download link
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'pnc-metamodel-workflow.json';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }, [reactFlowInstance]);
+
+  // Export function
+  const handleExport = useCallback(() => {
+    if (exportButtonRef.current) {
+      exportButtonRef.current.handleExport();
+    }
+  }, []);
+
   return (
-    <div className="App">
+    <div className="App" tabIndex={0}>
       <div className="header">
         <h1>PNC Meta Model - Data Product Designer</h1>
+        <ThemeToggle />
       </div>
       <div className="app-content">
         <LeftPanel />
@@ -180,11 +314,14 @@ function App() {
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
             onNodeClick={onNodeClick}
+            onEdgeClick={onEdgeClick}
+            onPaneClick={onPaneClick}
             nodeTypes={nodeTypes}
             onInit={setReactFlowInstance}
             onDrop={onDrop}
             onDragOver={onDragOver}
             fitView
+            deleteKeyCode={null} // Disable default delete to handle it manually
           >
             <Controls />
             <MiniMap />
@@ -199,12 +336,13 @@ function App() {
                   setEdges
                 }}
                 exportProps={{
-                  handleExport: () => {
-                    // Call the ExportButton's handleExport method using the ref
-                    if (exportButtonRef.current) {
-                      exportButtonRef.current.handleExport();
-                    }
-                  }
+                  handleExport
+                }}
+                historyProps={{
+                  onUndo: handleUndo,
+                  onRedo: handleRedo,
+                  canUndo,
+                  canRedo
                 }}
               />
             </Panel>
@@ -214,6 +352,8 @@ function App() {
               ref={exportButtonRef}
               reactFlowInstance={reactFlowInstance} 
             />
+            
+            <KeyboardShortcutsHelp />
           </ReactFlow>
         </div>
       
@@ -225,8 +365,28 @@ function App() {
             onDeleteNode={onDeleteNode}
           />
         )}
+        
+        <KeyboardShortcuts 
+          onAddDataSource={() => onAddNode('dataSource')}
+          onAddProcessor={() => onAddNode('processor')}
+          onAddOutput={() => onAddNode('output')}
+          onSave={handleSave}
+          onExport={handleExport}
+          onUndo={handleUndo}
+          onRedo={handleRedo}
+        />
+        
+        <WelcomeModal />
       </div>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }
 

@@ -1,0 +1,667 @@
+/* Light Theme (Default) */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #212529;
+  --text-secondary: #495057;
+  --text-tertiary: #6c757d;
+  --border-color: #dee2e6;
+  --accent-color: #3498db;
+  --accent-hover: #2980b9;
+  --success-color: #28a745;
+  --success-hover: #218838;
+  --danger-color: #dc3545;
+  --danger-hover: #c82333;
+  --warning-color: #ffc107;
+  --warning-hover: #e0a800;
+  --info-color: #17a2b8;
+  --info-hover: #138496;
+  --node-datasource-bg: #e3f2fd;
+  --node-datasource-border: #90caf9;
+  --node-processor-bg: #f3e5f5;
+  --node-processor-border: #ce93d8;
+  --node-output-bg: #e8f5e9;
+  --node-output-border: #a5d6a7;
+  --header-bg: #2c3e50;
+  --header-text: #ffffff;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --tooltip-bg: rgba(0, 0, 0, 0.8);
+  --tooltip-text: #ffffff;
+}
+
+/* Dark Theme */
+.dark-theme {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #3d3d3d;
+  --text-primary: #f8f9fa;
+  --text-secondary: #e9ecef;
+  --text-tertiary: #dee2e6;
+  --border-color: #4d4d4d;
+  --accent-color: #3498db;
+  --accent-hover: #2980b9;
+  --success-color: #28a745;
+  --success-hover: #218838;
+  --danger-color: #dc3545;
+  --danger-hover: #c82333;
+  --warning-color: #ffc107;
+  --warning-hover: #e0a800;
+  --info-color: #17a2b8;
+  --info-hover: #138496;
+  --node-datasource-bg: #1a3a5f;
+  --node-datasource-border: #2c5282;
+  --node-processor-bg: #3c1f5c;
+  --node-processor-border: #553c9a;
+  --node-output-bg: #1c4532;
+  --node-output-border: #2f855a;
+  --header-bg: #1a202c;
+  --header-text: #ffffff;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+  --tooltip-bg: rgba(255, 255, 255, 0.9);
+  --tooltip-text: #000000;
+}
+
+/* Apply theme variables to elements */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.App {
+  background-color: var(--bg-primary);
+}
+
+.header {
+  background-color: var(--header-bg);
+  color: var(--header-text);
+}
+
+.left-panel {
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+}
+
+.panel-header h3,
+.panel-section h4 {
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.dnd-node {
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+}
+
+.dnd-node.source {
+  background-color: var(--node-datasource-bg);
+  border-color: var(--node-datasource-border);
+}
+
+.dnd-node.processor {
+  background-color: var(--node-processor-bg);
+  border-color: var(--node-processor-border);
+}
+
+.dnd-node.output {
+  background-color: var(--node-output-bg);
+  border-color: var(--node-output-border);
+}
+
+.dnd-node-label {
+  color: var(--text-primary);
+}
+
+.node-properties {
+  background-color: var(--bg-primary);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+}
+
+.properties-header {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.properties-header h3 {
+  color: var(--text-primary);
+}
+
+.close-properties-button {
+  color: var(--text-tertiary);
+}
+
+.close-properties-button:hover {
+  color: var(--text-primary);
+}
+
+.property label {
+  color: var(--text-secondary);
+}
+
+.property input,
+.property textarea,
+.property select {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.node-type-badge {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.property-section {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.property-section h4 {
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.node-toolbar {
+  background-color: var(--bg-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.node-toolbar button {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.node-toolbar button:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.toolbar-divider {
+  background-color: var(--border-color);
+}
+
+.action-button {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.action-button:hover {
+  background-color: var(--accent-hover);
+}
+
+.save-properties-button {
+  background-color: var(--success-color) !important;
+}
+
+.save-properties-button:hover {
+  background-color: var(--success-hover) !important;
+}
+
+.delete-button {
+  background-color: var(--danger-color) !important;
+}
+
+.delete-button:hover {
+  background-color: var(--danger-hover) !important;
+}
+
+.export-button {
+  background-color: var(--success-color);
+}
+
+.export-button:hover {
+  background-color: var(--success-hover);
+}
+
+.explore-button {
+  background-color: var(--info-color);
+}
+
+.explore-button:hover {
+  background-color: var(--info-hover);
+}
+
+.modal-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: var(--bg-primary);
+  box-shadow: var(--shadow-lg);
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+  color: var(--text-primary);
+}
+
+.close-button {
+  color: var(--text-tertiary);
+}
+
+.close-button:hover {
+  color: var(--text-primary);
+}
+
+.code-preview {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+/* React Flow Node Styling */
+.react-flow__node {
+  border: 1px solid var(--border-color);
+}
+
+.react-flow__node-dataSource {
+  background-color: var(--node-datasource-bg);
+  border-color: var(--node-datasource-border);
+}
+
+.react-flow__node-processor {
+  background-color: var(--node-processor-bg);
+  border-color: var(--node-processor-border);
+}
+
+.react-flow__node-output {
+  background-color: var(--node-output-bg);
+  border-color: var(--node-output-border);
+}
+
+.node-header {
+  color: var(--text-primary);
+}
+
+.node-description {
+  color: var(--text-secondary);
+}
+
+/* Theme Toggle Button */
+.theme-toggle-button {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: var(--header-text);
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+.theme-toggle-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Tooltip Styles */
+.tooltip {
+  background-color: var(--tooltip-bg);
+  color: var(--tooltip-text);
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  max-width: 250px;
+  text-align: center;
+  pointer-events: none;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  border-width: 5px;
+  border-style: solid;
+}
+
+.tooltip-top::after {
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-color: var(--tooltip-bg) transparent transparent transparent;
+}
+
+.tooltip-bottom::after {
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-color: transparent transparent var(--tooltip-bg) transparent;
+}
+
+.tooltip-left::after {
+  top: 50%;
+  left: 100%;
+  margin-top: -5px;
+  border-color: transparent transparent transparent var(--tooltip-bg);
+}
+
+.tooltip-right::after {
+  top: 50%;
+  right: 100%;
+  margin-top: -5px;
+  border-color: transparent var(--tooltip-bg) transparent transparent;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Welcome Modal Styles */
+.welcome-modal {
+  max-width: 600px;
+  width: 90%;
+}
+
+.welcome-body {
+  padding: 20px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.welcome-body ul, 
+.welcome-body ol {
+  margin-left: 20px;
+  margin-bottom: 15px;
+}
+
+.welcome-body li {
+  margin-bottom: 8px;
+}
+
+.welcome-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px 20px;
+}
+
+.step-indicators {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.step-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--border-color);
+  margin: 0 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.step-indicator.active {
+  background-color: var(--accent-color);
+}
+
+.welcome-actions {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.prev-button,
+.next-button {
+  padding: 10px 20px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.prev-button {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.prev-button:hover {
+  background-color: var(--border-color);
+}
+
+.next-button {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.next-button:hover {
+  background-color: var(--accent-hover);
+}
+
+.tutorial-icon {
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+kbd {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  color: var(--text-primary);
+  display: inline-block;
+  font-size: 0.85em;
+  font-family: monospace;
+  line-height: 1;
+  padding: 2px 4px;
+  margin: 0 2px;
+}
+
+/* Responsive Design Improvements */
+@media (max-width: 768px) {
+  .app-content {
+    flex-direction: column;
+  }
+  
+  .left-panel {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    overflow-y: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .panel-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .dnd-node {
+    width: calc(50% - 10px);
+    margin-bottom: 0;
+  }
+  
+  .node-properties {
+    position: fixed;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: 60vh;
+    border-radius: 15px 15px 0 0;
+  }
+  
+  .node-toolbar {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .welcome-modal {
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
+/* Drag and Drop Visual Feedback */
+.dnd-node.dragging {
+  opacity: 0.7;
+  transform: scale(1.05);
+  box-shadow: var(--shadow-md);
+}
+
+/* Undo/Redo Buttons */
+.history-buttons {
+  display: flex;
+  gap: 5px;
+}
+
+.history-button {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.history-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.history-button:not(:disabled):hover {
+  background-color: var(--bg-tertiary);
+}
+
+/* Keyboard Shortcut Hint */
+.shortcut-hint {
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 0.8em;
+  color: var(--text-tertiary);
+  background-color: var(--bg-tertiary);
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+/* Node Highlight on Hover */
+.react-flow__node:hover {
+  box-shadow: 0 0 0 2px var(--accent-color);
+}
+
+/* Connection Line Styling */
+.react-flow__edge-path {
+  stroke: var(--accent-color);
+  stroke-width: 2;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--success-color);
+  stroke-width: 3;
+}
+
+/* Handle Styling */
+.react-flow__handle {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+  border: 1px solid var(--bg-primary);
+}
+
+.react-flow__handle:hover {
+  background-color: var(--accent-hover);
+}
+
+/* Controls and MiniMap Styling */
+.react-flow__controls {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.react-flow__controls-button {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.react-flow__controls-button:hover {
+  background-color: var(--bg-tertiary);
+}
+
+.react-flow__minimap {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+}
+
+/* Keyboard Shortcut Help Button */
+.keyboard-help-button {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  box-shadow: var(--shadow-sm);
+}
+
+.keyboard-help-button:hover {
+  background-color: var(--bg-tertiary);
+}
+
+/* Keyboard Shortcuts Modal */
+.keyboard-shortcuts-modal .modal-body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.shortcut-category {
+  margin-bottom: 20px;
+}
+
+.shortcut-category h4 {
+  margin-bottom: 10px;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 5px;
+}
+
+.shortcut-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.shortcut-keys {
+  display: flex;
+  gap: 5px;
+}
