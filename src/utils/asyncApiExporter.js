@@ -8,9 +8,10 @@ import * as yaml from 'js-yaml';
  * @param {Array} nodes - The nodes in the pipeline
  * @param {Array} edges - The edges connecting the nodes
  * @param {Object} metadata - Additional metadata for the API
+ * @param {Object} ontology - Ontology entities and properties
  * @returns {Object} AsyncAPI 3.0.0 specification as a JavaScript object
  */
-export const convertToAsyncAPI = (nodes, edges, metadata = {}) => {
+export const convertToAsyncAPI = (nodes, edges, metadata = {}, ontology = {}) => {
   // Default metadata
   const defaultMetadata = {
     title: 'Data Pipeline API',
@@ -33,6 +34,10 @@ export const convertToAsyncAPI = (nodes, edges, metadata = {}) => {
     components: {
       messages: {},
       schemas: {}
+    },
+    // Add ontology section to store entities and their properties
+    'x-ontology': {
+      entities: {}
     }
   };
 
@@ -243,6 +248,51 @@ export const convertToAsyncAPI = (nodes, edges, metadata = {}) => {
     }
   });
 
+  // Process ontology entities and properties
+  if (ontology && ontology.entities && Array.isArray(ontology.entities)) {
+    console.log('Processing ontology entities:', ontology.entities.length);
+    
+    // Add each entity and its properties to the AsyncAPI document
+    ontology.entities.forEach(entity => {
+      asyncApiDoc['x-ontology'].entities[entity.id] = {
+        name: entity.name,
+        properties: {}
+      };
+      
+      // Add properties for this entity
+      if (entity.properties && Array.isArray(entity.properties)) {
+        entity.properties.forEach(property => {
+          asyncApiDoc['x-ontology'].entities[entity.id].properties[property.id] = {
+            name: property.name,
+            type: property.type
+          };
+        });
+      }
+    });
+    
+    // Process edges that have entity relationships
+    edges.forEach(edge => {
+      if (edge.data && edge.data.entityId) {
+        const entityId = edge.data.entityId;
+        const entity = ontology.entities.find(e => e.id === entityId);
+        
+        if (entity) {
+          // Add relationship information to the edge in the AsyncAPI document
+          const operationId = `operation-${edge.source}-to-${edge.target}`;
+          if (asyncApiDoc.operations[operationId]) {
+            asyncApiDoc.operations[operationId]['x-relationship'] = {
+              entityId: entityId,
+              entityName: entity.name,
+              label: edge.data.label || '',
+              description: edge.data.description || '',
+              properties: edge.data.properties || {}
+            };
+          }
+        }
+      }
+    });
+  }
+
   return asyncApiDoc;
 };
 
@@ -415,18 +465,20 @@ export const generateAsyncApiYaml = (asyncApiObject) => {
  * @param {Array} nodes - The nodes in the pipeline
  * @param {Array} edges - The edges connecting the nodes
  * @param {Object} metadata - Additional metadata for the API
+ * @param {Object} ontology - Ontology entities and properties
  * @returns {String} AsyncAPI specification as YAML string
  */
-export const exportAsAsyncApi = (nodes, edges, metadata = {}) => {
+export const exportAsAsyncApi = (nodes, edges, metadata = {}, ontology = {}) => {
   try {
     console.log('Starting AsyncAPI export with', nodes.length, 'nodes and', edges.length, 'edges');
+    console.log('Ontology data:', ontology);
     
     if (!nodes || !Array.isArray(nodes) || nodes.length === 0) {
       console.warn('No nodes provided for AsyncAPI export');
       return "# No nodes found in the workflow\nasyncapi: '3.0.0'\ninfo:\n  title: Empty Workflow\n  version: '1.0.0'";
     }
     
-    const asyncApiObject = convertToAsyncAPI(nodes, edges, metadata);
+    const asyncApiObject = convertToAsyncAPI(nodes, edges, metadata, ontology);
     console.log('AsyncAPI object created successfully');
     
     return generateAsyncApiYaml(asyncApiObject);

@@ -346,7 +346,8 @@ function App() {
             {/* Hidden export button component */}
             <ExportButton 
               ref={exportButtonRef}
-              reactFlowInstance={reactFlowInstance} 
+              reactFlowInstance={reactFlowInstance}
+              ontology={ontology}
             />
           </ReactFlow>
         </div>

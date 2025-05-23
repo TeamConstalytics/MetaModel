@@ -2,7 +2,7 @@ import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { exportAsAsyncApi } from '../utils/asyncApiExporter';
 import { FaFileExport, FaDownload, FaTimes, FaFileCode } from 'react-icons/fa';
 
-const ExportButton = forwardRef(({ reactFlowInstance }, ref) => {
+const ExportButton = forwardRef(({ reactFlowInstance, ontology }, ref) => {
   const [showModal, setShowModal] = useState(false);
   const [exportedData, setExportedData] = useState('');
   
@@ -22,7 +22,8 @@ const ExportButton = forwardRef(({ reactFlowInstance }, ref) => {
     try {
       const { nodes, edges } = reactFlowInstance.toObject();
       console.log('Exporting nodes:', nodes.length, 'edges:', edges.length);
-      const asyncApiYaml = exportAsAsyncApi(nodes, edges, metadata);
+      console.log('Exporting ontology:', ontology);
+      const asyncApiYaml = exportAsAsyncApi(nodes, edges, metadata, ontology);
       console.log('Generated YAML length:', asyncApiYaml.length);
       setExportedData(asyncApiYaml);
       setShowModal(true);
