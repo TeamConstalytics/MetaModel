@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaTimes, FaTrash, FaSave } from 'react-icons/fa';
 
-const EdgeProperties = ({ selectedEdge, onUpdateEdgeData, onClose, onDeleteEdge, ontology }) => {
+const EdgeProperties = ({ selectedEdge, onUpdateEdgeData, onClose, onDeleteEdge, ontology, inRightPanel = false }) => {
   const [edgeData, setEdgeData] = useState({
     label: selectedEdge?.data?.label || '',
     entityId: selectedEdge?.data?.entityId || '',
@@ -59,13 +59,15 @@ const EdgeProperties = ({ selectedEdge, onUpdateEdgeData, onClose, onDeleteEdge,
   console.log('Selected Entity:', selectedEntity);
 
   return (
-    <div className="edge-properties">
-      <div className="properties-header">
-        <h3>Edge Properties</h3>
-        <button className="close-properties-button" onClick={onClose}>
-          <FaTimes />
-        </button>
-      </div>
+    <div className={inRightPanel ? "right-panel-properties" : "edge-properties"}>
+      {!inRightPanel && (
+        <div className="properties-header">
+          <h3>Edge Properties</h3>
+          <button className="close-properties-button" onClick={onClose}>
+            <FaTimes />
+          </button>
+        </div>
+      )}
 
       <div className="property">
         <label>Label</label>

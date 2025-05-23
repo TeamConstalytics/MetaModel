@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaPlus, FaTrash, FaEdit, FaSave } from 'react-icons/fa';
 import { MdOutlineCategory } from 'react-icons/md';
 
-const OntologyPanel = ({ ontology, setOntology }) => {
+const OntologyPanel = ({ ontology, setOntology, inRightPanel = false }) => {
   const [entities, setEntities] = useState(ontology?.entities || []);
   const [newEntityName, setNewEntityName] = useState('');
   const [newPropertyName, setNewPropertyName] = useState('');
@@ -134,10 +134,12 @@ const OntologyPanel = ({ ontology, setOntology }) => {
   };
 
   return (
-    <div className="ontology-panel">
-      <div className="panel-header">
-        <h3><MdOutlineCategory className="panel-header-icon" /> Ontology</h3>
-      </div>
+    <div className={inRightPanel ? "right-panel-ontology" : "ontology-panel"}>
+      {!inRightPanel && (
+        <div className="panel-header">
+          <h3><MdOutlineCategory className="panel-header-icon" /> Ontology</h3>
+        </div>
+      )}
       
       <div className="panel-section">
         <h4>Entities</h4>

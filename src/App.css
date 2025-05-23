@@ -662,6 +662,21 @@
 }
 
 /* Ontology Panel Styles */
+/* Right Panel Styles */
+.right-panel {
+  width: 300px;
+  background-color: #f8f9fa;
+  border-left: 1px solid #e9ecef;
+  overflow-y: auto;
+  padding: 15px;
+  height: 100%;
+}
+
+.right-panel-properties,
+.right-panel-ontology {
+  padding: 10px 0;
+}
+
 .ontology-panel {
   width: 300px;
   background-color: #f8f9fa;

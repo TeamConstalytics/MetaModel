@@ -18,10 +18,8 @@ import ProcessorNode from './components/nodes/ProcessorNode';
 import OutputNode from './components/nodes/OutputNode';
 import NodeToolbar from './components/NodeToolbar';
 import LeftPanel from './components/LeftPanel';
+import RightPanel from './components/RightPanel';
 import ExportButton from './components/ExportButton';
-import NodeProperties from './components/NodeProperties';
-import EdgeProperties from './components/EdgeProperties';
-import OntologyPanel from './components/OntologyPanel';
 
 // Initial nodes and edges
 const initialNodes = [
@@ -353,28 +351,16 @@ function App() {
           </ReactFlow>
         </div>
       
-        {selectedNode && (
-          <NodeProperties 
-            selectedNode={selectedNode}
-            onUpdateNodeData={onUpdateNodeData}
-            onClose={closeNodeProperties}
-            onDeleteNode={onDeleteNode}
-          />
-        )}
-        
-        {selectedEdge && (
-          <EdgeProperties 
-            selectedEdge={selectedEdge}
-            onUpdateEdgeData={updateEdgeData}
-            onClose={closeEdgeProperties}
-            onDeleteEdge={deleteEdge}
-            ontology={ontology}
-          />
-        )}
-        
-        <OntologyPanel 
-          ontology={ontology} 
-          setOntology={setOntology} 
+        <RightPanel
+          selectedNode={selectedNode}
+          selectedEdge={selectedEdge}
+          onUpdateNodeData={onUpdateNodeData}
+          onClose={selectedNode ? closeNodeProperties : closeEdgeProperties}
+          onDeleteNode={onDeleteNode}
+          updateEdgeData={updateEdgeData}
+          deleteEdge={deleteEdge}
+          ontology={ontology}
+          setOntology={setOntology}
         />
       </div>
     </div>

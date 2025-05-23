@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaSave, FaTimes, FaTrash } from 'react-icons/fa';
 
-const NodeProperties = ({ selectedNode, onUpdateNodeData, onClose, onDeleteNode }) => {
+const NodeProperties = ({ selectedNode, onUpdateNodeData, onClose, onDeleteNode, inRightPanel = false }) => {
   const [nodeData, setNodeData] = useState({});
   
   useEffect(() => {
@@ -25,16 +25,18 @@ const NodeProperties = ({ selectedNode, onUpdateNodeData, onClose, onDeleteNode 
   if (!selectedNode) return null;
 
   return (
-    <div className="node-properties">
-      <div className="properties-header">
-        <h3>Node Properties</h3>
-        <button 
-          className="close-properties-button" 
-          onClick={onClose}
-        >
-          <FaTimes />
-        </button>
-      </div>
+    <div className={inRightPanel ? "right-panel-properties" : "node-properties"}>
+      {!inRightPanel && (
+        <div className="properties-header">
+          <h3>Node Properties</h3>
+          <button 
+            className="close-properties-button" 
+            onClick={onClose}
+          >
+            <FaTimes />
+          </button>
+        </div>
+      )}
       
       <div className="property">
         <label>Label:</label>
