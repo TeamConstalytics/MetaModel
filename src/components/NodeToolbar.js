@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaDatabase, FaCogs, FaFileExport, FaFileCode } from 'react-icons/fa';
 import SaveLoadButtons from './SaveLoadButtons';
+import ConversationPrompt from './ConversationPrompt';
 
 const NodeToolbar = ({ onAddNode, saveLoadProps, exportProps }) => {
   const { reactFlowInstance, setNodes, setEdges, ontology, setOntology } = saveLoadProps || {};
@@ -9,6 +10,19 @@ const NodeToolbar = ({ onAddNode, saveLoadProps, exportProps }) => {
   const handleExport = () => {
     if (exportProps && exportProps.handleExport) {
       exportProps.handleExport();
+    }
+  };
+  
+  // Handle flow generation from conversation prompt
+  const handleGenerateFlow = (generatedFlow) => {
+    if (generatedFlow && generatedFlow.nodes && generatedFlow.edges) {
+      // Clear current flow
+      setNodes([]);
+      setEdges([]);
+      
+      // Add generated nodes and edges
+      setNodes(generatedFlow.nodes || []);
+      setEdges(generatedFlow.edges || []);
     }
   };
 
@@ -38,6 +52,10 @@ const NodeToolbar = ({ onAddNode, saveLoadProps, exportProps }) => {
         <FaFileCode className="button-icon" />
         <span className="button-text">AsyncAPI</span>
       </button>
+      
+      <div className="toolbar-divider"></div>
+      
+      <ConversationPrompt onGenerateFlow={handleGenerateFlow} />
     </div>
   );
 };
