@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { FaRobot, FaTimes, FaPlay } from 'react-icons/fa';
 import './ConversationPrompt.css';
+import { generateFlowFromPrompt } from '../api/aiService';
 
 const ConversationPrompt = ({ onGenerateFlow }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,200 +21,21 @@ const ConversationPrompt = ({ onGenerateFlow }) => {
     setIsLoading(true);
     
     try {
-      // Here we would typically make an API call to a backend service
-      // that would process the prompt and return a flow configuration
-      // For now, we'll simulate this with a timeout and generate a simple flow
+      // Call the AI service to generate a flow based on the prompt
+      const generatedFlow = await generateFlowFromPrompt(prompt);
       
-      setTimeout(() => {
-        // Generate a simple flow based on the prompt
-        const generatedFlow = generateFlowFromPrompt(prompt);
-        
-        // Pass the generated flow to the parent component
-        onGenerateFlow(generatedFlow);
-        
-        // Close the prompt modal
-        setIsLoading(false);
-        setIsOpen(false);
-        setPrompt('');
-      }, 1500);
+      // Pass the generated flow to the parent component
+      onGenerateFlow(generatedFlow);
+      
+      // Close the prompt modal
+      setIsLoading(false);
+      setIsOpen(false);
+      setPrompt('');
     } catch (err) {
+      console.error('Error generating flow:', err);
       setError('Failed to generate flow. Please try again.');
       setIsLoading(false);
     }
-  };
-
-  // Simple function to generate a flow based on the prompt
-  // In a real implementation, this would be replaced with an API call to a backend service
-  const generateFlowFromPrompt = (promptText) => {
-    const promptLower = promptText.toLowerCase();
-    
-    // Default nodes that will be part of most flows
-    const nodes = [];
-    const edges = [];
-    
-    // Determine data source type
-    let sourceType = 'file'; // default
-    let sourceLabel = 'File Source';
-    let sourceDesc = 'CSV File Input';
-    
-    if (promptLower.includes('database') || promptLower.includes('sql') || promptLower.includes('postgres')) {
-      sourceType = 'database';
-      sourceLabel = 'Database Source';
-      sourceDesc = 'SQL Database Connection';
-    } else if (promptLower.includes('api') || promptLower.includes('rest') || promptLower.includes('http')) {
-      sourceType = 'api';
-      sourceLabel = 'API Source';
-      sourceDesc = 'REST API Endpoint';
-    }
-    
-    // Add source node
-    nodes.push({
-      id: '1',
-      type: 'dataSource',
-      position: { x: 250, y: 100 },
-      data: { 
-        label: sourceLabel, 
-        description: sourceDesc,
-        subtype: sourceType
-      },
-    });
-    
-    // Determine if we need processing nodes
-    let processorCount = 0;
-    
-    // Check for filtering needs
-    if (promptLower.includes('filter') || promptLower.includes('where') || promptLower.includes('condition')) {
-      processorCount++;
-      nodes.push({
-        id: String(processorCount + 1),
-        type: 'processor',
-        position: { x: 250, y: 100 + processorCount * 150 },
-        data: { 
-          label: 'Filter Processor', 
-          description: 'Filter data based on conditions',
-          subtype: 'filter'
-        },
-      });
-      
-      // Add edge from previous node to this one
-      edges.push({
-        id: `e${processorCount}-${processorCount + 1}`,
-        source: String(processorCount),
-        target: String(processorCount + 1),
-      });
-    }
-    
-    // Check for transformation needs
-    if (promptLower.includes('transform') || promptLower.includes('convert') || promptLower.includes('change')) {
-      processorCount++;
-      nodes.push({
-        id: String(processorCount + 1),
-        type: 'processor',
-        position: { x: 250, y: 100 + processorCount * 150 },
-        data: { 
-          label: 'Transform Processor', 
-          description: 'Transform data structure or format',
-          subtype: 'transform'
-        },
-      });
-      
-      // Add edge from previous node to this one
-      edges.push({
-        id: `e${processorCount}-${processorCount + 1}`,
-        source: String(processorCount),
-        target: String(processorCount + 1),
-      });
-    }
-    
-    // Check for aggregation needs
-    if (promptLower.includes('aggregate') || promptLower.includes('group') || promptLower.includes('summarize')) {
-      processorCount++;
-      nodes.push({
-        id: String(processorCount + 1),
-        type: 'processor',
-        position: { x: 250, y: 100 + processorCount * 150 },
-        data: { 
-          label: 'Aggregate Processor', 
-          description: 'Group and summarize data',
-          subtype: 'aggregate'
-        },
-      });
-      
-      // Add edge from previous node to this one
-      edges.push({
-        id: `e${processorCount}-${processorCount + 1}`,
-        source: String(processorCount),
-        target: String(processorCount + 1),
-      });
-    }
-    
-    // Check for streaming needs
-    if (promptLower.includes('kafka') || promptLower.includes('stream') || promptLower.includes('real-time')) {
-      processorCount++;
-      nodes.push({
-        id: String(processorCount + 1),
-        type: 'processor',
-        position: { x: 250, y: 100 + processorCount * 150 },
-        data: { 
-          label: 'Kafka Processor', 
-          description: 'Stream processing with Kafka',
-          subtype: 'kafka'
-        },
-      });
-      
-      // Add edge from previous node to this one
-      edges.push({
-        id: `e${processorCount}-${processorCount + 1}`,
-        source: String(processorCount),
-        target: String(processorCount + 1),
-      });
-    }
-    
-    // Determine output type
-    let outputType = 'file'; // default
-    let outputLabel = 'File Output';
-    let outputDesc = 'CSV File Output';
-    
-    if (promptLower.includes('database output') || promptLower.includes('save to database') || promptLower.includes('store in database')) {
-      outputType = 'database';
-      outputLabel = 'Database Output';
-      outputDesc = 'Write to SQL Database';
-    } else if (promptLower.includes('api output') || promptLower.includes('webhook') || promptLower.includes('send to endpoint')) {
-      outputType = 'api';
-      outputLabel = 'API Output';
-      outputDesc = 'Send to REST Endpoint';
-    }
-    
-    // Add output node
-    const outputId = String(nodes.length + 1);
-    nodes.push({
-      id: outputId,
-      type: 'output',
-      position: { x: 250, y: 100 + nodes.length * 150 },
-      data: { 
-        label: outputLabel, 
-        description: outputDesc,
-        subtype: outputType
-      },
-    });
-    
-    // Add edge from last processor to output
-    if (processorCount > 0) {
-      edges.push({
-        id: `e${processorCount + 1}-${outputId}`,
-        source: String(processorCount + 1),
-        target: outputId,
-      });
-    } else {
-      // If no processors, connect source directly to output
-      edges.push({
-        id: `e1-${outputId}`,
-        source: '1',
-        target: outputId,
-      });
-    }
-    
-    return { nodes, edges };
   };
 
   return (
@@ -248,11 +70,26 @@ const ConversationPrompt = ({ onGenerateFlow }) => {
                 <li>Output destinations (files, databases, APIs)</li>
               </ul>
               
+              <div className="prompt-examples">
+                <h4>Example prompts:</h4>
+                <div className="example-list">
+                  <div className="example-item" onClick={() => setPrompt("I need a pipeline that reads data from a CSV file, filters out rows with missing values, transforms date columns to a standard format, and saves the result to a PostgreSQL database.")}>
+                    CSV to PostgreSQL with filtering and transformation
+                  </div>
+                  <div className="example-item" onClick={() => setPrompt("Create a data pipeline that pulls data from a REST API, aggregates it by customer region, and outputs the results to a dashboard.")}>
+                    API to dashboard with aggregation
+                  </div>
+                  <div className="example-item" onClick={() => setPrompt("Build a real-time pipeline that processes Kafka streams, filters out invalid messages, and sends the results to a webhook endpoint.")}>
+                    Kafka stream processing with filtering
+                  </div>
+                </div>
+              </div>
+              
               <form onSubmit={handleSubmit}>
                 <textarea
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="Example: I need a pipeline that reads data from a CSV file, filters out rows with missing values, transforms date columns to a standard format, and saves the result to a PostgreSQL database."
+                  placeholder="Describe your data pipeline in natural language. Be specific about sources, processing steps, and outputs."
                   rows={6}
                   disabled={isLoading}
                 />
