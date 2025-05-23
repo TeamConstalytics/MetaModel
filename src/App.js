@@ -8,6 +8,7 @@ import ReactFlow, {
   addEdge,
   Panel,
   useReactFlow,
+  MarkerType,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import './App.css';
@@ -19,6 +20,7 @@ import ProcessorNode from './components/nodes/ProcessorNode';
 import OutputNode from './components/nodes/OutputNode';
 import NodeToolbar from './components/NodeToolbar';
 import LeftPanel from './components/LeftPanel';
+import RightPanel from './components/RightPanel';
 import ExportButton from './components/ExportButton';
 import NodeProperties from './components/NodeProperties';
 import ThemeToggle from './components/ThemeToggle';
@@ -68,6 +70,30 @@ function AppContent() {
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
+  // Initialize ontology with some example entities if needed
+  const [ontology, setOntology] = useState({ 
+    entities: [
+      {
+        id: 'entity_default_1',
+        name: 'Relationship',
+        properties: [
+          { id: 'prop_1', name: 'Type', type: 'string' },
+          { id: 'prop_2', name: 'Strength', type: 'number' }
+        ]
+      },
+      {
+        id: 'entity_default_2',
+        name: 'Dependency',
+        properties: [
+          { id: 'prop_3', name: 'Direction', type: 'string' },
+          { id: 'prop_4', name: 'Required', type: 'boolean' }
+        ]
+      }
+    ] 
+  });
+  
+  // Debug ontology state
+  console.log('Initial ontology state:', ontology);
   const reactFlowWrapper = useRef(null);
   const exportButtonRef = useRef(null);
   const reactFlowInstance2 = useReactFlow();
@@ -98,7 +124,28 @@ function AppContent() {
   // Handle connections between nodes
   const onConnect = useCallback(
     (params) => {
-      setEdges((eds) => addEdge(params, eds));
+      console.log('Creating new connection with params:', params);
+      const newEdge = {
+        ...params,
+        type: 'default',
+        animated: false,
+        style: { stroke: '#555' },
+        markerEnd: {
+          type: MarkerType.ArrowClosed,
+          width: 20,
+          height: 20,
+          color: '#555',
+        },
+        data: {
+          label: '',
+          entityId: '',
+          description: ''
+        },
+        label: '' // Add label at the edge level for display
+      };
+      console.log('Created new edge:', newEdge);
+      const result = setEdges((eds) => addEdge(newEdge, eds));
+      return result;
     },
     [setEdges]
   );
@@ -106,13 +153,7 @@ function AppContent() {
   // Handle node selection
   const onNodeClick = useCallback((event, node) => {
     setSelectedNode(node);
-    setSelectedEdge(null);
-  }, []);
-
-  // Handle edge selection
-  const onEdgeClick = useCallback((event, edge) => {
-    setSelectedEdge(edge);
-    setSelectedNode(null);
+    setSelectedEdge(null); // Clear edge selection when a node is clicked
   }, []);
 
   // Handle background click to clear selection
@@ -120,6 +161,61 @@ function AppContent() {
     setSelectedNode(null);
     setSelectedEdge(null);
   }, []);
+  
+  // Handle edge selection
+  const onEdgeClick = useCallback((event, edge) => {
+    setSelectedEdge(edge);
+    setSelectedNode(null); // Clear node selection when an edge is clicked
+  }, []);
+  
+  // Close node properties panel
+  const closeNodeProperties = useCallback(() => {
+    setSelectedNode(null);
+  }, []);
+  
+  // Close edge properties panel
+  const closeEdgeProperties = useCallback(() => {
+    setSelectedEdge(null);
+  }, []);
+  
+  // Update edge data
+  const updateEdgeData = useCallback((edgeId, newData) => {
+    console.log('Updating edge with ID:', edgeId);
+    console.log('New edge data:', newData);
+    
+    setEdges((eds) => {
+      const updatedEdges = eds.map((edge) => {
+        if (edge.id === edgeId) {
+          const updatedEdge = {
+            ...edge,
+            data: {
+              ...edge.data,
+              ...newData
+            },
+            label: newData.label || '',
+            // Update edge styling based on entity selection
+            animated: newData.entityId ? true : false,
+            style: { 
+              stroke: newData.entityId ? '#007bff' : '#555',
+              strokeWidth: newData.entityId ? 2 : 1
+            }
+          };
+          console.log('Updated edge:', updatedEdge);
+          return updatedEdge;
+        }
+        return edge;
+      });
+      
+      console.log('All updated edges:', updatedEdges);
+      return updatedEdges;
+    });
+  }, [setEdges]);
+  
+  // Delete edge
+  const deleteEdge = useCallback((edgeId) => {
+    setEdges((eds) => eds.filter((edge) => edge.id !== edgeId));
+    setSelectedEdge(null);
+  }, [setEdges]);
 
   // Add new node to the canvas
   const onAddNode = useCallback(
@@ -305,7 +401,33 @@ function AppContent() {
         <ThemeToggle />
       </div>
       <div className="app-content">
-        <LeftPanel />
+        <LeftPanel 
+          saveLoadProps={{
+            reactFlowInstance,
+            setNodes,
+            setEdges,
+            ontology,
+            setOntology
+          }}
+          exportProps={{
+            handleExport: () => {
+              if (exportButtonRef.current) {
+                exportButtonRef.current.handleExport();
+              }
+            }
+          }}
+          onGenerateFlow={(generatedFlow) => {
+            if (generatedFlow && generatedFlow.nodes && generatedFlow.edges) {
+              // Clear current flow
+              setNodes([]);
+              setEdges([]);
+              
+              // Add generated nodes and edges
+              setNodes(generatedFlow.nodes || []);
+              setEdges(generatedFlow.edges || []);
+            }
+          }}
+        />
         <div className="flow-container" ref={reactFlowWrapper}>
           <ReactFlow
             nodes={nodes}
@@ -333,7 +455,9 @@ function AppContent() {
                 saveLoadProps={{
                   reactFlowInstance,
                   setNodes,
-                  setEdges
+                  setEdges,
+                  ontology,
+                  setOntology
                 }}
                 exportProps={{
                   handleExport
@@ -350,21 +474,25 @@ function AppContent() {
             {/* Hidden export button component */}
             <ExportButton 
               ref={exportButtonRef}
-              reactFlowInstance={reactFlowInstance} 
+              reactFlowInstance={reactFlowInstance}
+              ontology={ontology}
             />
             
             <KeyboardShortcutsHelp />
           </ReactFlow>
         </div>
       
-        {selectedNode && (
-          <NodeProperties 
-            selectedNode={selectedNode}
-            onUpdateNodeData={onUpdateNodeData}
-            onClose={() => setSelectedNode(null)}
-            onDeleteNode={onDeleteNode}
-          />
-        )}
+        <RightPanel
+          selectedNode={selectedNode}
+          selectedEdge={selectedEdge}
+          onUpdateNodeData={onUpdateNodeData}
+          onClose={selectedNode ? closeNodeProperties : closeEdgeProperties}
+          onDeleteNode={onDeleteNode}
+          updateEdgeData={updateEdgeData}
+          deleteEdge={deleteEdge}
+          ontology={ontology}
+          setOntology={setOntology}
+        />
         
         <KeyboardShortcuts 
           onAddDataSource={() => onAddNode('dataSource')}
