@@ -63,11 +63,12 @@ const ConversationPrompt = ({ onGenerateFlow, buttonClassName }) => {
             </div>
             
             <div className="conversation-prompt-content">
-              <p>Describe the data pipeline you want to build. Include details about:</p>
+              <p>Describe the data pipeline you want to build in natural language. The more details you provide, the better the generated pipeline will match your needs.</p>
               <ul>
-                <li>Data sources (files, databases, APIs)</li>
-                <li>Processing steps (filtering, transformations, aggregations)</li>
-                <li>Output destinations (files, databases, APIs)</li>
+                <li><strong>Data sources:</strong> Specify file formats (CSV, JSON), databases (PostgreSQL, MongoDB), messaging systems (Kafka), or APIs</li>
+                <li><strong>Processing steps:</strong> Describe filtering conditions, transformations, joins, aggregations, or business rules</li>
+                <li><strong>Output destinations:</strong> Indicate where results should be stored (databases, files, APIs, visualization tools)</li>
+                <li><strong>Use cases:</strong> Explain the business purpose of this pipeline to help with optimization</li>
               </ul>
               
               <div className="prompt-examples">
@@ -82,6 +83,15 @@ const ConversationPrompt = ({ onGenerateFlow, buttonClassName }) => {
                   <div className="example-item" onClick={() => setPrompt("Build a real-time pipeline that processes Kafka streams, filters out invalid messages, and sends the results to a webhook endpoint.")}>
                     Kafka stream processing with filtering
                   </div>
+                  <div className="example-item" onClick={() => setPrompt("Create a data pipeline that reads customer data from MongoDB, enriches it with product information from a REST API, and stores the results in Elasticsearch for search capabilities.")}>
+                    MongoDB to Elasticsearch with API enrichment
+                  </div>
+                  <div className="example-item" onClick={() => setPrompt("Build a graph data pipeline that extracts transaction data from a PostgreSQL database, transforms it into a graph structure with customers and merchants as nodes, and loads it into Neo4J for fraud detection analysis.")}>
+                    SQL to Neo4J Graph for fraud detection
+                  </div>
+                  <div className="example-item" onClick={() => setPrompt("Create a real-time data pipeline that consumes IoT sensor data from Kafka, performs anomaly detection using a transformation processor, and outputs alerts to both a MongoDB collection and a webhook endpoint.")}>
+                    IoT data processing with multi-destination output
+                  </div>
                 </div>
               </div>
               
@@ -89,7 +99,7 @@ const ConversationPrompt = ({ onGenerateFlow, buttonClassName }) => {
                 <textarea
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="Describe your data pipeline in natural language. Be specific about sources, processing steps, and outputs."
+                  placeholder="Example: I need a data pipeline that ingests customer transaction data from a MongoDB database, enriches it with product information from a REST API, performs fraud detection using a custom algorithm, and stores results in both Elasticsearch for search and Kafka for real-time alerts."
                   rows={6}
                   disabled={isLoading}
                 />

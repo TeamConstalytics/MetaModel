@@ -1,6 +1,7 @@
 import React from 'react';
 import { Handle, Position } from 'reactflow';
-import { FaDatabase, FaFileAlt, FaPlug } from 'react-icons/fa';
+import { FaDatabase, FaFileAlt, FaPlug, FaProjectDiagram } from 'react-icons/fa';
+import { SiApachekafka, SiMongodb, SiElasticsearch } from 'react-icons/si';
 
 const DataSourceNode = ({ data }) => {
   // Determine icon based on subtype
@@ -10,6 +11,14 @@ const DataSourceNode = ({ data }) => {
         return <FaFileAlt className="node-icon-svg" />;
       case 'api':
         return <FaPlug className="node-icon-svg" />;
+      case 'kafka':
+        return <SiApachekafka className="node-icon-svg" />;
+      case 'mongodb':
+        return <SiMongodb className="node-icon-svg" />;
+      case 'elastic':
+        return <SiElasticsearch className="node-icon-svg" />;
+      case 'neo4j':
+        return <FaProjectDiagram className="node-icon-svg" />;
       case 'database':
       default:
         return <FaDatabase className="node-icon-svg" />;

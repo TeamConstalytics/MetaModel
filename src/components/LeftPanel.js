@@ -2,9 +2,9 @@ import React, { useCallback, useState } from 'react';
 import { 
   FaDatabase, FaFileAlt, FaPlug, FaFilter, FaRandom, 
   FaChartBar, FaSave, FaFileExport, FaGlobe, FaChevronDown, 
-  FaChevronRight, FaFileCode, FaUpload
+  FaChevronRight, FaFileCode, FaUpload, FaProjectDiagram
 } from 'react-icons/fa';
-import { SiApachekafka } from 'react-icons/si';
+import { SiApachekafka, SiMongodb, SiElasticsearch } from 'react-icons/si';
 import { BiData } from 'react-icons/bi';
 import ConversationPrompt from './ConversationPrompt';
 
@@ -141,6 +141,46 @@ const LeftPanel = ({ saveLoadProps, exportProps, onGenerateFlow }) => {
               </div>
               <div className="dnd-node-label">API Source</div>
             </div>
+            <div 
+              className="dnd-node source" 
+              onDragStart={(event) => onDragStart(event, 'dataSource', 'kafka', 'Kafka Source', 'Apache Kafka Stream')} 
+              draggable
+            >
+              <div className="dnd-node-icon">
+                <SiApachekafka className="node-icon" />
+              </div>
+              <div className="dnd-node-label">Kafka Source</div>
+            </div>
+            <div 
+              className="dnd-node source" 
+              onDragStart={(event) => onDragStart(event, 'dataSource', 'mongodb', 'MongoDB Source', 'MongoDB Collection')} 
+              draggable
+            >
+              <div className="dnd-node-icon">
+                <SiMongodb className="node-icon" />
+              </div>
+              <div className="dnd-node-label">MongoDB Source</div>
+            </div>
+            <div 
+              className="dnd-node source" 
+              onDragStart={(event) => onDragStart(event, 'dataSource', 'elastic', 'Elasticsearch Source', 'Elasticsearch Index')} 
+              draggable
+            >
+              <div className="dnd-node-icon">
+                <SiElasticsearch className="node-icon" />
+              </div>
+              <div className="dnd-node-label">Elasticsearch Source</div>
+            </div>
+            <div 
+              className="dnd-node source" 
+              onDragStart={(event) => onDragStart(event, 'dataSource', 'neo4j', 'Neo4J Graph Source', 'Neo4J Graph Database')} 
+              draggable
+            >
+              <div className="dnd-node-icon">
+                <FaProjectDiagram className="node-icon" />
+              </div>
+              <div className="dnd-node-label">Neo4J Graph Source</div>
+            </div>
           </div>
         )}
       </div>
@@ -234,6 +274,46 @@ const LeftPanel = ({ saveLoadProps, exportProps, onGenerateFlow }) => {
                 <FaGlobe className="node-icon" />
               </div>
               <div className="dnd-node-label">API Output</div>
+            </div>
+            <div 
+              className="dnd-node output" 
+              onDragStart={(event) => onDragStart(event, 'output', 'kafka', 'Kafka Output', 'Publish to Kafka topics')} 
+              draggable
+            >
+              <div className="dnd-node-icon">
+                <SiApachekafka className="node-icon" />
+              </div>
+              <div className="dnd-node-label">Kafka Output</div>
+            </div>
+            <div 
+              className="dnd-node output" 
+              onDragStart={(event) => onDragStart(event, 'output', 'mongodb', 'MongoDB Output', 'Write to MongoDB collections')} 
+              draggable
+            >
+              <div className="dnd-node-icon">
+                <SiMongodb className="node-icon" />
+              </div>
+              <div className="dnd-node-label">MongoDB Output</div>
+            </div>
+            <div 
+              className="dnd-node output" 
+              onDragStart={(event) => onDragStart(event, 'output', 'elastic', 'Elasticsearch Output', 'Index data in Elasticsearch')} 
+              draggable
+            >
+              <div className="dnd-node-icon">
+                <SiElasticsearch className="node-icon" />
+              </div>
+              <div className="dnd-node-label">Elasticsearch Output</div>
+            </div>
+            <div 
+              className="dnd-node output" 
+              onDragStart={(event) => onDragStart(event, 'output', 'neo4j', 'Neo4J Graph Output', 'Store data in Neo4J Graph Database')} 
+              draggable
+            >
+              <div className="dnd-node-icon">
+                <FaProjectDiagram className="node-icon" />
+              </div>
+              <div className="dnd-node-label">Neo4J Graph Output</div>
             </div>
           </div>
         )}
