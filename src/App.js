@@ -278,7 +278,33 @@ function App() {
         <h1>PNC Meta Model - Data Product Designer</h1>
       </div>
       <div className="app-content">
-        <LeftPanel />
+        <LeftPanel 
+          saveLoadProps={{
+            reactFlowInstance,
+            setNodes,
+            setEdges,
+            ontology,
+            setOntology
+          }}
+          exportProps={{
+            handleExport: () => {
+              if (exportButtonRef.current) {
+                exportButtonRef.current.handleExport();
+              }
+            }
+          }}
+          onGenerateFlow={(generatedFlow) => {
+            if (generatedFlow && generatedFlow.nodes && generatedFlow.edges) {
+              // Clear current flow
+              setNodes([]);
+              setEdges([]);
+              
+              // Add generated nodes and edges
+              setNodes(generatedFlow.nodes || []);
+              setEdges(generatedFlow.edges || []);
+            }
+          }}
+        />
         <div className="flow-container" ref={reactFlowWrapper}>
           <ReactFlow
             nodes={nodes}

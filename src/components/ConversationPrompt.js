@@ -3,7 +3,7 @@ import { FaRobot, FaTimes, FaPlay } from 'react-icons/fa';
 import './ConversationPrompt.css';
 import { generateFlowFromPrompt } from '../api/aiService';
 
-const ConversationPrompt = ({ onGenerateFlow }) => {
+const ConversationPrompt = ({ onGenerateFlow, buttonClassName }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -41,12 +41,12 @@ const ConversationPrompt = ({ onGenerateFlow }) => {
   return (
     <>
       <button 
-        className="conversation-prompt-button"
+        className={buttonClassName || "conversation-prompt-button"}
         onClick={() => setIsOpen(true)}
         title="Generate Flow from Description"
       >
-        <FaRobot className="button-icon" />
-        <span className="button-text">AI Generate</span>
+        <FaRobot className={buttonClassName ? "utility-icon" : "button-icon"} />
+        <span className={buttonClassName ? "" : "button-text"}>AI Generate</span>
       </button>
       
       {isOpen && (
