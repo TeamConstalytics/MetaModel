@@ -1,24 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { FaTimes, FaTrash, FaSave } from 'react-icons/fa';
+import { FaTimes, FaTrash, FaSave, FaPlus, FaTags } from 'react-icons/fa';
+import './NodeProperties.css'; // Reuse the same CSS for tags and bindings
 
 const EdgeProperties = ({ selectedEdge, onUpdateEdgeData, onClose, onDeleteEdge, ontology, inRightPanel = false }) => {
   const [edgeData, setEdgeData] = useState({
     label: selectedEdge?.data?.label || '',
     entityId: selectedEdge?.data?.entityId || '',
     description: selectedEdge?.data?.description || '',
-    properties: selectedEdge?.data?.properties || {}
+    properties: selectedEdge?.data?.properties || {},
+    tags: selectedEdge?.data?.tags || {},
+    bindings: selectedEdge?.data?.bindings || {}
   });
+  
+  const [newTagKey, setNewTagKey] = useState('');
+  const [newTagValue, setNewTagValue] = useState('');
+  const [newBindingKey, setNewBindingKey] = useState('');
+  const [newBindingValue, setNewBindingValue] = useState('');
 
   // Update local state when selected edge changes
   useEffect(() => {
     if (selectedEdge) {
       console.log('Selected edge data:', selectedEdge.data);
-      setEdgeData({
+      const initialData = {
         label: selectedEdge.data?.label || '',
         entityId: selectedEdge.data?.entityId || '',
         description: selectedEdge.data?.description || '',
-        properties: selectedEdge.data?.properties || {}
-      });
+        properties: selectedEdge.data?.properties || {},
+        tags: selectedEdge.data?.tags || {},
+        bindings: selectedEdge.data?.bindings || {}
+      };
+      setEdgeData(initialData);
     }
   }, [selectedEdge]);
 
@@ -48,6 +59,62 @@ const EdgeProperties = ({ selectedEdge, onUpdateEdgeData, onClose, onDeleteEdge,
 
   const handleDelete = () => {
     onDeleteEdge(selectedEdge.id);
+  };
+  
+  // Handle adding a new tag
+  const handleAddTag = () => {
+    if (newTagKey.trim() === '') return;
+    
+    setEdgeData({
+      ...edgeData,
+      tags: {
+        ...edgeData.tags,
+        [newTagKey]: newTagValue
+      }
+    });
+    
+    // Clear inputs
+    setNewTagKey('');
+    setNewTagValue('');
+  };
+  
+  // Handle removing a tag
+  const handleRemoveTag = (key) => {
+    const updatedTags = {...edgeData.tags};
+    delete updatedTags[key];
+    
+    setEdgeData({
+      ...edgeData,
+      tags: updatedTags
+    });
+  };
+  
+  // Handle adding a new binding
+  const handleAddBinding = () => {
+    if (newBindingKey.trim() === '') return;
+    
+    setEdgeData({
+      ...edgeData,
+      bindings: {
+        ...edgeData.bindings,
+        [newBindingKey]: newBindingValue
+      }
+    });
+    
+    // Clear inputs
+    setNewBindingKey('');
+    setNewBindingValue('');
+  };
+  
+  // Handle removing a binding
+  const handleRemoveBinding = (key) => {
+    const updatedBindings = {...edgeData.bindings};
+    delete updatedBindings[key];
+    
+    setEdgeData({
+      ...edgeData,
+      bindings: updatedBindings
+    });
   };
 
   // Find the selected entity
@@ -159,6 +226,84 @@ const EdgeProperties = ({ selectedEdge, onUpdateEdgeData, onClose, onDeleteEdge,
 
       <div className="edge-type-badge">
         Target: {selectedEdge.target}
+      </div>
+
+      {/* Tags Section */}
+      <div className="property-section">
+        <h4><FaTags /> Tags</h4>
+        <div className="tags-container">
+          {Object.entries(edgeData.tags || {}).map(([key, value]) => (
+            <div key={key} className="tag-item">
+              <span className="tag-key">{key}:</span>
+              <span className="tag-value">{value}</span>
+              <button 
+                className="remove-tag-button" 
+                onClick={() => handleRemoveTag(key)}
+              >
+                <FaTimes />
+              </button>
+            </div>
+          ))}
+        </div>
+        <div className="add-tag-form">
+          <input
+            type="text"
+            placeholder="Key"
+            value={newTagKey}
+            onChange={(e) => setNewTagKey(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Value"
+            value={newTagValue}
+            onChange={(e) => setNewTagValue(e.target.value)}
+          />
+          <button 
+            className="add-tag-button" 
+            onClick={handleAddTag}
+          >
+            <FaPlus /> Add Tag
+          </button>
+        </div>
+      </div>
+
+      {/* Bindings Section */}
+      <div className="property-section">
+        <h4>Bindings</h4>
+        <div className="bindings-container">
+          {Object.entries(edgeData.bindings || {}).map(([key, value]) => (
+            <div key={key} className="binding-item">
+              <span className="binding-key">{key}:</span>
+              <span className="binding-value">{value}</span>
+              <button 
+                className="remove-binding-button" 
+                onClick={() => handleRemoveBinding(key)}
+              >
+                <FaTimes />
+              </button>
+            </div>
+          ))}
+        </div>
+        <div className="add-binding-form">
+          <input
+            type="text"
+            placeholder="Key"
+            value={newBindingKey}
+            onChange={(e) => setNewBindingKey(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Value"
+            value={newBindingValue}
+            onChange={(e) => setNewBindingValue(e.target.value)}
+          />
+          <button 
+            className="add-binding-button" 
+            onClick={handleAddBinding}
+          >
+            <FaPlus /> Add Binding
+          </button>
+        </div>
       </div>
 
       <div className="property-buttons">
