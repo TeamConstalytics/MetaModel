@@ -2,7 +2,8 @@ import React, { useCallback, useState } from 'react';
 import { 
   FaDatabase, FaFileAlt, FaPlug, FaFilter, FaRandom, 
   FaChartBar, FaSave, FaFileExport, FaGlobe, FaChevronDown, 
-  FaChevronRight, FaFileCode, FaUpload, FaProjectDiagram
+  FaChevronRight, FaFileCode, FaUpload, FaProjectDiagram,
+  FaBars, FaAngleLeft, FaAngleRight
 } from 'react-icons/fa';
 import { SiApachekafka, SiMongodb, SiElasticsearch } from 'react-icons/si';
 import { BiData } from 'react-icons/bi';
@@ -13,6 +14,7 @@ const LeftPanel = ({ saveLoadProps, exportProps, onGenerateFlow }) => {
   const [processorsOpen, setProcessorsOpen] = useState(true);
   const [outputsOpen, setOutputsOpen] = useState(true);
   const [utilsOpen, setUtilsOpen] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
   
   const onDragStart = useCallback((event, nodeType, nodeSubtype, label, description) => {
     const nodeData = {
@@ -98,9 +100,19 @@ const LeftPanel = ({ saveLoadProps, exportProps, onGenerateFlow }) => {
   };
 
   return (
-    <div className="left-panel">
+    <div className={`left-panel ${collapsed ? 'collapsed' : ''}`}>
       <div className="panel-header">
-        <h3><BiData className="panel-header-icon" /> Data Product Concepts</h3>
+        <h3>
+          {!collapsed && <><BiData className="panel-header-icon" /> Data Product Concepts</>}
+          {collapsed && <BiData className="panel-header-icon-collapsed" />}
+        </h3>
+        <button 
+          className="collapse-button" 
+          onClick={() => setCollapsed(!collapsed)}
+          title={collapsed ? "Expand panel" : "Collapse panel"}
+        >
+          {collapsed ? <FaAngleRight /> : <FaAngleLeft />}
+        </button>
       </div>
       
       <div className="panel-section">

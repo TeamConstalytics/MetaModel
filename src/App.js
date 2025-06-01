@@ -18,8 +18,13 @@ import ProcessorNode from './components/nodes/ProcessorNode';
 import OutputNode from './components/nodes/OutputNode';
 import NodeToolbar from './components/NodeToolbar';
 import LeftPanel from './components/LeftPanel';
-import RightPanel from './components/RightPanel';
 import ExportButton from './components/ExportButton';
+import TopNavigation from './components/TopNavigation';
+import OntologyManagement from './components/OntologyManagement';
+import DataFabricConfig from './components/DataFabricConfig';
+import DataProductsMarketplace from './components/DataProductsMarketplace';
+import NodeProperties from './components/NodeProperties';
+import EdgeProperties from './components/EdgeProperties';
 
 // Initial nodes and edges
 const initialNodes = [
@@ -56,11 +61,15 @@ const nodeTypes = {
 };
 
 function App() {
+  // Active module state
+  const [activeModule, setActiveModule] = useState('dataProductDesigner');
+  
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [selectedNode, setSelectedNode] = useState(null);
   const [selectedEdge, setSelectedEdge] = useState(null);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
+  
   // Initialize ontology with some example entities if needed
   const [ontology, setOntology] = useState({ 
     entities: [
@@ -83,15 +92,12 @@ function App() {
     ] 
   });
   
-  // Debug ontology state
-  console.log('Initial ontology state:', ontology);
   const reactFlowWrapper = useRef(null);
   const exportButtonRef = useRef(null);
 
   // Handle connections between nodes
   const onConnect = useCallback(
     (params) => {
-      console.log('Creating new connection with params:', params);
       const newEdge = {
         ...params,
         type: 'default',
@@ -110,7 +116,6 @@ function App() {
         },
         label: '' // Add label at the edge level for display
       };
-      console.log('Created new edge:', newEdge);
       const result = setEdges((eds) => addEdge(newEdge, eds));
       return result;
     },
@@ -141,9 +146,6 @@ function App() {
   
   // Update edge data
   const updateEdgeData = useCallback((edgeId, newData) => {
-    console.log('Updating edge with ID:', edgeId);
-    console.log('New edge data:', newData);
-    
     setEdges((eds) => {
       const updatedEdges = eds.map((edge) => {
         if (edge.id === edgeId) {
@@ -161,13 +163,11 @@ function App() {
               strokeWidth: newData.entityId ? 2 : 1
             }
           };
-          console.log('Updated edge:', updatedEdge);
           return updatedEdge;
         }
         return edge;
       });
       
-      console.log('All updated edges:', updatedEdges);
       return updatedEdges;
     });
   }, [setEdges]);
@@ -270,99 +270,127 @@ function App() {
     [setNodes, setEdges]
   );
 
+  // Render the active module
+  const renderActiveModule = () => {
+    switch (activeModule) {
+      case 'dataProductDesigner':
+        return (
+          <div className="app-content">
+            <LeftPanel 
+              saveLoadProps={{
+                reactFlowInstance,
+                setNodes,
+                setEdges,
+                ontology,
+                setOntology
+              }}
+              exportProps={{
+                handleExport: () => {
+                  if (exportButtonRef.current) {
+                    exportButtonRef.current.handleExport();
+                  }
+                }
+              }}
+              onGenerateFlow={(generatedFlow) => {
+                if (generatedFlow && generatedFlow.nodes && generatedFlow.edges) {
+                  // Clear current flow
+                  setNodes([]);
+                  setEdges([]);
+                  
+                  // Add generated nodes and edges
+                  setNodes(generatedFlow.nodes || []);
+                  setEdges(generatedFlow.edges || []);
+                }
+              }}
+            />
+            <div className="flow-container" ref={reactFlowWrapper}>
+              <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                onConnect={onConnect}
+                onNodeClick={onNodeClick}
+                onEdgeClick={onEdgeClick}
+                nodeTypes={nodeTypes}
+                onInit={setReactFlowInstance}
+                onDrop={onDrop}
+                onDragOver={onDragOver}
+                fitView
+              >
+                <Controls />
+                <MiniMap />
+                <Background variant="dots" gap={12} size={1} />
+                
+                <Panel position="top-right">
+                  <NodeToolbar 
+                    onAddNode={onAddNode} 
+                    saveLoadProps={{
+                      reactFlowInstance,
+                      setNodes,
+                      setEdges,
+                      ontology,
+                      setOntology
+                    }}
+                    exportProps={{
+                      handleExport: () => {
+                        // Call the ExportButton's handleExport method using the ref
+                        if (exportButtonRef.current) {
+                          exportButtonRef.current.handleExport();
+                        }
+                      }
+                    }}
+                  />
+                </Panel>
+                
+                {/* Hidden export button component */}
+                <ExportButton 
+                  ref={exportButtonRef}
+                  reactFlowInstance={reactFlowInstance} 
+                />
+              </ReactFlow>
+            </div>
+          </div>
+        );
+      case 'ontologyManagement':
+        return <OntologyManagement ontology={ontology} setOntology={setOntology} />;
+      case 'dataFabricConfig':
+        return <DataFabricConfig />;
+      case 'dataProductsMarketplace':
+        return <DataProductsMarketplace />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="App">
-      <div className="header">
-        <h1>PNC Meta Model - Data Product Designer</h1>
-      </div>
-      <div className="app-content">
-        <LeftPanel 
-          saveLoadProps={{
-            reactFlowInstance,
-            setNodes,
-            setEdges,
-            ontology,
-            setOntology
-          }}
-          exportProps={{
-            handleExport: () => {
-              if (exportButtonRef.current) {
-                exportButtonRef.current.handleExport();
-              }
-            }
-          }}
-          onGenerateFlow={(generatedFlow) => {
-            if (generatedFlow && generatedFlow.nodes && generatedFlow.edges) {
-              // Clear current flow
-              setNodes([]);
-              setEdges([]);
-              
-              // Add generated nodes and edges
-              setNodes(generatedFlow.nodes || []);
-              setEdges(generatedFlow.edges || []);
-            }
-          }}
-        />
-        <div className="flow-container" ref={reactFlowWrapper}>
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onNodeClick={onNodeClick}
-            onEdgeClick={onEdgeClick}
-            nodeTypes={nodeTypes}
-            onInit={setReactFlowInstance}
-            onDrop={onDrop}
-            onDragOver={onDragOver}
-            fitView
-          >
-            <Controls />
-            <MiniMap />
-            <Background variant="dots" gap={12} size={1} />
-            
-            <Panel position="top-right">
-              <NodeToolbar 
-                onAddNode={onAddNode} 
-                saveLoadProps={{
-                  reactFlowInstance,
-                  setNodes,
-                  setEdges,
-                  ontology,
-                  setOntology
-                }}
-                exportProps={{
-                  handleExport: () => {
-                    // Call the ExportButton's handleExport method using the ref
-                    if (exportButtonRef.current) {
-                      exportButtonRef.current.handleExport();
-                    }
-                  }
-                }}
-              />
-            </Panel>
-            
-            {/* Hidden export button component */}
-            <ExportButton 
-              ref={exportButtonRef}
-              reactFlowInstance={reactFlowInstance} 
-            />
-          </ReactFlow>
-        </div>
+      <TopNavigation activeModule={activeModule} setActiveModule={setActiveModule} />
       
-        <RightPanel
+      {renderActiveModule()}
+      
+      {/* Node Properties Popup */}
+      {selectedNode && (
+        <NodeProperties 
           selectedNode={selectedNode}
-          selectedEdge={selectedEdge}
           onUpdateNodeData={onUpdateNodeData}
-          onClose={selectedNode ? closeNodeProperties : closeEdgeProperties}
+          onClose={closeNodeProperties}
           onDeleteNode={onDeleteNode}
-          updateEdgeData={updateEdgeData}
-          deleteEdge={deleteEdge}
-          ontology={ontology}
-          setOntology={setOntology}
+          inRightPanel={false}
         />
-      </div>
+      )}
+      
+      {/* Edge Properties Popup */}
+      {selectedEdge && (
+        <EdgeProperties 
+          selectedEdge={selectedEdge}
+          onUpdateEdgeData={updateEdgeData}
+          onClose={closeEdgeProperties}
+          onDeleteEdge={deleteEdge}
+          ontology={ontology}
+          inRightPanel={false}
+        />
+      )}
     </div>
   );
 }
